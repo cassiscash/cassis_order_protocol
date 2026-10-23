@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <link rel="icon" type="image/svg+xml" href="{{ get_url(path='logo.svg') }}" />
+    {%- if page %}{% set desc = page.description | default(value=config.description) %}{% elif section %}{% set desc = section.description | default(value=config.description) %}{% else %}{% set desc = config.description %}{% endif -%}
+    <meta name="description" content="{{ desc }}" />
+    <meta property="og:site_name" content="{{ config.title }}" />
+    <meta property="og:title" content="{% block og_title %}{{ config.title }} | {{ config.extra.tagline }}{% endblock og_title %}" />
+    <meta property="og:description" content="{{ desc }}" />
+    <meta property="og:url" content="{{ current_url }}" />
+    <meta property="og:image" content="{{ get_url(path='og.png') }}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:type" content="website" />
+    <title>{% block title %}{{ config.title }} | {{ config.extra.tagline }}{% endblock title %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ get_url(path='site.css') }}" />
+  </head>
+  <body>
+    <a href="#main-content" class="fixed top-4 left-4 z-[100] -translate-y-[200%] border-[3px] border-ink bg-card px-5 py-3 font-bold no-underline shadow-s focus:translate-y-0">Skip to main content</a>
+
+    <header class="sticky top-0 z-50 border-b-[3px] border-ink bg-bg">
+      <nav class="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-6 py-3.5 md:px-12" aria-label="Primary">
+        <a href="{{ get_url(path='/') }}" class="flex items-center gap-2.5 font-space text-xl font-extrabold tracking-[0.06em] uppercase no-underline text-ink md:text-2xl">
+          <img src="{{ get_url(path='logo.svg') }}" alt="Cassis Order Protocol logo" width="34" height="34" />
+          <span>COP<span class="text-cop">.</span></span>
+        </a>
+        <ul class="m-0 hidden list-none items-center gap-8 p-0 md:flex">
+          <li><a class="font-space text-[0.82rem] font-semibold tracking-[0.1em] uppercase no-underline text-ink2 hover:text-ink hover:underline" href="{{ get_url(path='/') }}#how">How it works</a></li>
+          <li><a class="font-space text-[0.82rem] font-semibold tracking-[0.1em] uppercase no-underline text-ink2 hover:text-ink hover:underline" href="{{ get_url(path='/') }}#uses">Uses</a></li>
+          <li><a class="font-space text-[0.82rem] font-semibold tracking-[0.1em] uppercase no-underline text-ink2 hover:text-ink hover:underline" href="{{ get_url(path='/') }}#examples">Examples</a></li>
+          <li><a class="font-space text-[0.82rem] font-semibold tracking-[0.1em] uppercase no-underline text-ink2 hover:text-ink hover:underline" href="{{ get_url(path='spec/') }}">Spec</a></li>
+        </ul>
+        <div class="hidden gap-3.5 md:flex">
+          <a class="inline-flex items-center justify-center gap-2.5 border-[3px] border-ink bg-ink px-5 py-2.5 font-space text-xs font-bold tracking-[0.08em] uppercase text-white no-underline shadow-s transition-[transform,box-shadow] duration-150 hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[1px_1px_0_#14191c]" href="{{ config.extra.github_url }}" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+        <div class="relative flex items-center md:hidden">
+          <input type="checkbox" id="nav-toggle" aria-label="Toggle navigation" class="peer sr-only" />
+          <label class="block cursor-pointer border-[3px] border-ink bg-card p-1.5 shadow-s" for="nav-toggle" aria-label="Open menu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" class="block">
+              <path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" />
+            </svg>
+          </label>
+          <div class="absolute top-[calc(100%+0.9rem)] right-0 z-[60] hidden w-[min(320px,calc(100vw-3rem))] flex-col border-[3px] border-ink bg-card shadow-m peer-checked:flex">
+            <a class="border-b-2 border-ink px-6 py-4 font-space text-sm font-bold tracking-[0.1em] uppercase no-underline text-ink" href="{{ get_url(path='/') }}#how">How it works</a>
+            <a class="border-b-2 border-ink px-6 py-4 font-space text-sm font-bold tracking-[0.1em] uppercase no-underline text-ink" href="{{ get_url(path='/') }}#uses">Uses</a>
+            <a class="border-b-2 border-ink px-6 py-4 font-space text-sm font-bold tracking-[0.1em] uppercase no-underline text-ink" href="{{ get_url(path='/') }}#examples">Examples</a>
+            <a class="border-b-2 border-ink px-6 py-4 font-space text-sm font-bold tracking-[0.1em] uppercase no-underline text-ink" href="{{ get_url(path='spec/') }}">Spec</a>
+            <a class="flex items-center gap-2.5 bg-ink px-6 py-4 font-space text-sm font-bold tracking-[0.1em] uppercase no-underline text-white" href="{{ config.extra.github_url }}" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main-content">
+      {% block content %}{% endblock content %}
+    </main>
+
+    <footer class="bg-dark pt-12 pb-8 text-white">
+      <div class="mx-auto max-w-[1400px] px-6 md:px-12">
+        <div class="flex flex-col justify-between gap-10 md:flex-row">
+          <div>
+            <span class="flex items-center gap-2.5 font-space text-[1.35rem] font-extrabold tracking-[0.08em] uppercase">
+              <img src="{{ get_url(path='logo.svg') }}" alt="" width="30" height="30" />
+              Cassis Order Protocol
+            </span>
+            <span class="mt-2.5 block max-w-[420px] text-sm text-white/65">{{ config.extra.tagline }}</span>
+          </div>
+          <nav class="flex flex-wrap gap-14" aria-label="Footer">
+            <ul class="m-0 list-none p-0">
+              <li class="mb-3 font-space text-[0.68rem] font-extrabold tracking-[0.18em] uppercase text-white/80">Protocol</li>
+              <li><a class="mb-2 block text-sm text-white/60 no-underline hover:text-white" href="{{ get_url(path='/') }}#how">How it works</a></li>
+              <li><a class="mb-2 block text-sm text-white/60 no-underline hover:text-white" href="{{ get_url(path='/') }}#uses">Uses</a></li>
+              <li><a class="mb-2 block text-sm text-white/60 no-underline hover:text-white" href="{{ get_url(path='/') }}#examples">Examples</a></li>
+              <li><a class="mb-2 block text-sm text-white/60 no-underline hover:text-white" href="{{ get_url(path='spec/') }}">Spec</a></li>
+            </ul>
+            <ul class="m-0 list-none p-0">
+              <li class="mb-3 font-space text-[0.68rem] font-extrabold tracking-[0.18em] uppercase text-white/80">Community</li>
+              <li><a class="mb-2 block text-sm text-white/60 no-underline hover:text-white" href="{{ config.extra.github_url }}" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+              <li><a class="mb-2 block text-sm text-white/60 no-underline hover:text-white" href="{{ config.extra.github_url }}/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div class="mt-10 flex flex-col gap-2 border-t border-white/20 pt-6 text-[0.8rem] text-white/60 md:flex-row md:items-center md:justify-between">
+          <span>Spec {{ config.extra.spec_version }} draft &middot; {{ config.extra.status }}</span>
+          <span>Open protocol, open source.</span>
+        </div>
+      </div>
+    </footer>
+
+    <script src="{{ get_url(path='app.js') }}" defer></script>
+  </body>
+</html>

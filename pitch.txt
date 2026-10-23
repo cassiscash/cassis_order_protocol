@@ -1,0 +1,17 @@
+BITCOIN FOR COMMERCE
+
+The Cassis Order Protocol allows wallets to offer a rich and flexible experience for users to pay for anything in the real world without leaving their wallet interface.
+
+Great for buying goods from a catalog, converting currencies, building a shopping cart experience, paying variadic amounts for services, recurring payments, refunds and cashbacks, interaction with vending machines or offline merchants or any kind of programmatic experience.
+
+The wallet doesn't have to embed a web browser and the receiver doesn't need a web server or a domain name, they can be from just a person with their phone to a company with an always-on machine. Or even they can delegate the interactive role to a semi-trusted third-party, non-custodially.
+
+Technical Details
+
+The order page is built on hypereffect (https://hypereffect.dev), a small protocol for server-driven UI. The wallet implements its small set of common components (buttons, text, form inputs, list, row, column, image and a few more) using its native GUI framework.
+
+The payer contacts the receiver using an Iroh P2P encrypted channel and the receiver streams the page as hypereffect elements and signals, which can react to input locally through expressions. The wallet sends back actions as that interface is interacted with, and the receiver updates the page accordingly.
+
+At any point, the receiver may send a Cassis Invoice or an InvoiceRequest that the payer wallet prompts the payer to pay (or generates the invoice to get money back).
+
+The interaction may end at anytime, but the receiver may keep an id of it for as long as they want and the receiver may go back to that same id or a new one and continue interacting -- to get information about an order, update any details that were missing, ask for a refund or pay for another month.

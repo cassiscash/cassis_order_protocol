@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+
+{% block content %}
+<div class="border-b-[3px] border-ink bg-copdeep text-white">
+  <div class="mx-auto max-w-[1400px] px-6 py-2.5 font-fira text-[0.72rem] md:px-12">
+    Draft {{ config.extra.spec_version }}. This document may change while the protocol is under development.
+  </div>
+</div>
+
+<section class="border-b-[3px] border-ink">
+  <div class="mx-auto max-w-[1400px] px-6 pt-14 pb-10 md:px-12 md:pt-20">
+    <p class="m-0 mb-4 font-fira text-[0.7rem] font-bold tracking-[0.18em] uppercase text-ink2">Specification &middot; {{ config.extra.spec_version }} draft</p>
+    <h1 class="m-0 max-w-[900px] font-outfit text-[clamp(2.3rem,5.5vw,4.4rem)] leading-[0.92] font-black tracking-[-0.04em] uppercase">Cassis Order <span class="text-cop">Protocol</span></h1>
+    <p class="mt-5 mb-0 flex flex-wrap gap-x-6 gap-y-2 text-[0.88rem] text-ink2">
+      <a class="font-semibold text-copdeep underline" href="{{ config.extra.github_url }}/blob/master/spec.md" target="_blank" rel="noopener noreferrer">Source on GitHub</a>
+      <a class="font-semibold text-copdeep underline" href="{{ config.extra.github_url }}/issues" target="_blank" rel="noopener noreferrer">Report an issue</a>
+    </p>
+  </div>
+</section>
+
+<div class="mx-auto grid max-w-[1400px] gap-10 px-6 py-12 md:px-12 lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-16">
+  <nav class="hidden self-start lg:sticky lg:top-24 lg:block" aria-label="Contents">
+    <p class="m-0 mb-3 font-space text-[0.68rem] font-extrabold tracking-[0.18em] uppercase text-ink2">Contents</p>
+    <ul class="m-0 list-none border-l-[3px] border-ink p-0">
+      {% for h in page.toc %}
+      <li><a class="block py-1 pl-4 text-[0.84rem] leading-snug text-ink2 no-underline hover:text-ink hover:underline" href="{{ h.permalink | safe }}">{{ h.title }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+  <article class="prose min-w-0">
+    {{ page.content | safe }}
+  </article>
+</div>
+{% endblock content %}

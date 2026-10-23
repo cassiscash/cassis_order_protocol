@@ -1,0 +1,18 @@
+base_url = "https://cop.cassis.cash"
+title = "Cassis Order Protocol"
+description = "The Cassis Order Protocol (COP) lets a merchant stream an order page into a customer's wallet over iroh, and get paid with an invoice at the end."
+default_language = "en"
+build_search_index = false
+generate_feeds = false
+
+[markdown]
+render_emoji = true
+
+[markdown.highlighting]
+theme = "github-dark"
+
+[extra]
+github_url = "https://github.com/cassiscash/cassis_order_protocol"
+tagline = "Order pages that open inside your wallet"
+status = "Under development"
+spec_version = "v1.0"

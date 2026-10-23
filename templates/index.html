@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% set spec_url = get_url(path='spec/') %}
+{# ======================= UNDER DEVELOPMENT STRIP ======================= #}
+<div class="relative overflow-hidden border-b-[3px] border-ink bg-copdeep text-white" role="status">
+  <div class="mx-auto flex max-w-[1400px] flex-wrap items-center gap-x-4 gap-y-1.5 px-6 py-2.5 md:px-12">
+    <span class="inline-flex items-center gap-2.5 font-space text-[0.72rem] font-extrabold tracking-[0.14em] uppercase">
+      <span class="inline-block h-2.5 w-2.5 animate-blink bg-amber" aria-hidden="true"></span>
+      {{ config.extra.status }}
+    </span>
+    <span class="font-fira text-[0.72rem] text-white/90">
+      Spec {{ config.extra.spec_version }} is a draft and may change. Schemas and reference implementations are on the way.
+    </span>
+  </div>
+</div>
+
+{# ============================== HERO ============================== #}
+<section class="relative isolate overflow-hidden border-b-[3px] border-ink">
+  <div aria-hidden="true" class="absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(20,25,28,0.07)_1px,transparent_1px),linear-gradient(to_bottom,rgba(20,25,28,0.07)_1px,transparent_1px)] bg-[length:44px_44px]"></div>
+  <div aria-hidden="true" class="absolute -top-[60px] -right-[70px] -z-10 h-[230px] w-[230px] rotate-[9deg] border-[3px] border-ink bg-lime"></div>
+  <div aria-hidden="true" class="absolute -bottom-[80px] -left-[60px] -z-10 h-[190px] w-[190px] -rotate-[7deg] border-[3px] border-ink bg-coral"></div>
+
+  <div class="mx-auto grid max-w-[1400px] items-center gap-12 px-6 py-16 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-24">
+    <div class="flex min-w-0 flex-col items-start">
+      <div class="mb-6 flex flex-wrap items-center gap-2 font-fira text-[0.65rem] font-bold tracking-[0.1em] uppercase">
+        <span class="border-2 border-ink bg-card px-2.5 py-1 text-ink2">spec {{ config.extra.spec_version }} draft</span>
+        <span class="border-2 border-ink bg-card px-2.5 py-1 text-ink2">iroh</span>
+        <span class="border-2 border-ink bg-card px-2.5 py-1 text-ink2">hypereffect</span>
+        <span class="border-2 border-ink bg-violet px-2.5 py-1 text-white">server &harr; client</span>
+      </div>
+      <h1 class="m-0 max-w-[760px] font-outfit text-[clamp(2.6rem,7vw,6.2rem)] leading-[0.85] font-black tracking-[-0.05em] uppercase">
+        Pay for anything in the real world without leaving your wallet
+      </h1>
+      <p class="mt-7 max-w-[620px] text-lg leading-[1.7] text-ink2">
+        Scan a QR code and the merchant's order page opens inside your wallet, drawn with the
+        wallet's own buttons, lists and forms. Pick what you want, then pay on the wallet's own
+        payment screen. The merchant needs no website, and the wallet needs no browser.
+      </p>
+      <div class="mt-9 flex flex-wrap gap-4">
+        <a class="inline-flex items-center justify-center gap-2.5 border-[3px] border-ink bg-ink px-8 py-3.5 font-space text-sm font-bold tracking-[0.08em] uppercase text-white no-underline shadow-s transition-[transform,box-shadow] duration-150 hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[1px_1px_0_#14191c]" href="{{ spec_url }}">
+          Read the spec
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+        </a>
+        <a class="inline-flex items-center justify-center gap-2.5 border-[3px] border-ink bg-card px-8 py-3.5 font-space text-sm font-bold tracking-[0.08em] uppercase text-ink no-underline shadow-s transition-[transform,box-shadow,background-color] duration-150 hover:translate-x-[3px] hover:translate-y-[3px] hover:bg-ink hover:text-white hover:shadow-[1px_1px_0_#14191c]" href="#examples">Try the examples</a>
+      </div>
+    </div>
+
+    {# ---------------------- WHO IS WHO CARD ---------------------- #}
+    <div class="border-[3px] border-ink bg-dark shadow-l">
+      <div class="flex items-center gap-2 border-b-2 border-ink bg-darkcard px-4 py-2.5" aria-hidden="true">
+        <span class="h-3 w-3 rounded-full border-[1.5px] border-ink" style="background: #ff5f56;"></span>
+        <span class="h-3 w-3 rounded-full border-[1.5px] border-ink" style="background: #ffbd2e;"></span>
+        <span class="h-3 w-3 rounded-full border-[1.5px] border-ink" style="background: #27c93f;"></span>
+        <span class="ml-2 font-fira text-[0.65rem] tracking-[0.1em] uppercase text-white/65">who is who</span>
+      </div>
+      <div class="flex flex-col gap-5 px-4 py-5 sm:px-6">
+        <div class="grid grid-cols-[auto_1fr] items-start gap-3.5">
+          <span class="mt-0.5 inline-block h-2.5 w-2.5 shrink-0" style="background: var(--color-copbright);" aria-hidden="true"></span>
+          <div>
+            <h2 class="m-0 font-space text-[0.78rem] font-extrabold tracking-[0.12em] uppercase text-white">Server</h2>
+            <p class="mt-1 text-[0.85rem] leading-[1.65] text-white/65">The merchant's side: a shop, a restaurant, a vending machine, anyone hosting an order page. It can run on an always-on machine or on the merchant's own phone. It describes the page, reacts to what the customer does, and sends invoices.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-[auto_1fr] items-start gap-3.5">
+          <span class="mt-0.5 inline-block h-2.5 w-2.5 shrink-0" style="background: var(--color-coral);" aria-hidden="true"></span>
+          <div>
+            <h2 class="m-0 font-space text-[0.78rem] font-extrabold tracking-[0.12em] uppercase text-white">Client</h2>
+            <p class="mt-1 text-[0.85rem] leading-[1.65] text-white/65">The customer's wallet, on their phone. It scans the QR code, opens the connection, draws the page with native components, and shows its own payment screen when an invoice arrives.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-[auto_1fr] items-start gap-3.5">
+          <span class="mt-0.5 inline-block h-2.5 w-2.5 shrink-0" style="background: var(--color-lime);" aria-hidden="true"></span>
+          <div>
+            <h2 class="m-0 font-space text-[0.78rem] font-extrabold tracking-[0.12em] uppercase text-white">Connection</h2>
+            <p class="mt-1 text-[0.85rem] leading-[1.65] text-white/65">An iroh connection (<code class="font-fira text-[0.78rem] text-lime">cassis-order</code> ALPN) carrying one JSON message per line, both ways. The QR code holds the server's iroh key and, optionally, a relay to reach it through.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ========================== HOW IT WORKS ========================== #}
+<section class="scroll-mt-16 border-b-[3px] border-ink bg-card" id="how" aria-labelledby="how-title">
+  <div class="mx-auto max-w-[1400px] px-6 pt-12 md:px-12">
+    <div class="flex items-center gap-3">
+      <span class="inline-block h-3 w-3" style="background: var(--color-violet);" aria-hidden="true"></span>
+      <h2 class="m-0 font-fira text-[0.7rem] font-bold tracking-[0.18em] uppercase text-ink2" id="how-title">How it works</h2>
+    </div>
+  </div>
+  <ol class="m-0 grid list-none p-0 sm:grid-cols-2 lg:grid-cols-4">
+    <li class="flex items-start gap-4 px-6 py-8 lg:px-7">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink font-fira text-[0.8rem] font-bold text-white" style="background: var(--color-cop);" aria-hidden="true">01</span>
+      <div>
+        <h3 class="m-0 font-space text-[0.85rem] font-extrabold tracking-[0.06em] uppercase">Scan</h3>
+        <p class="mt-1.5 text-[0.82rem] leading-[1.65] text-ink2">The QR code is a <code class="font-fira text-[0.76rem]">cop:</code> URI: the server's iroh key, optionally a relay, and a <em>claim</em> saying which table, till or flyer it came from.</p>
+      </div>
+    </li>
+    <li class="flex items-start gap-4 px-6 py-8 lg:px-7">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink font-fira text-[0.8rem] font-bold text-white" style="background: var(--color-coral);" aria-hidden="true">02</span>
+      <div>
+        <h3 class="m-0 font-space text-[0.85rem] font-extrabold tracking-[0.06em] uppercase">Connect</h3>
+        <p class="mt-1.5 text-[0.82rem] leading-[1.65] text-ink2">The wallet dials the server and sends the claim along with a random order id it just made up, so it can find this order again later.</p>
+      </div>
+    </li>
+    <li class="flex items-start gap-4 px-6 py-8 lg:px-7">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink font-fira text-[0.8rem] font-bold text-ink" style="background: var(--color-amber);" aria-hidden="true">03</span>
+      <div>
+        <h3 class="m-0 font-space text-[0.85rem] font-extrabold tracking-[0.06em] uppercase">Order</h3>
+        <p class="mt-1.5 text-[0.82rem] leading-[1.65] text-ink2">The server sends the page as hypereffect elements and signals, and the wallet draws them natively. Taps go back as <code class="font-fira text-[0.76rem]">action</code> messages, and the server answers with an updated page.</p>
+      </div>
+    </li>
+    <li class="flex items-start gap-4 px-6 py-8 lg:px-7">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink font-fira text-[0.8rem] font-bold text-ink" style="background: var(--color-lime);" aria-hidden="true">04</span>
+      <div>
+        <h3 class="m-0 font-space text-[0.85rem] font-extrabold tracking-[0.06em] uppercase">Pay</h3>
+        <p class="mt-1.5 text-[0.82rem] leading-[1.65] text-ink2">The server sends an invoice and the wallet shows its own payment screen. To give money back, the server sends an invoice request instead.</p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+{# ============================== USES ============================== #}
+<section class="relative scroll-mt-16 border-b-[3px] border-ink bg-bg" id="uses">
+  <div class="mx-auto max-w-[1400px] px-6 pt-16 md:px-12 md:pt-20">
+    <div class="max-w-[880px]">
+      <div class="mb-4 flex items-center gap-3">
+        <span class="inline-block h-3 w-3" style="background: var(--color-coral);" aria-hidden="true"></span>
+        <p class="m-0 font-fira text-[0.7rem] font-bold tracking-[0.18em] uppercase text-ink2">What it's for</p>
+      </div>
+      <h2 class="m-0 font-outfit text-[clamp(2.1rem,4.5vw,3.6rem)] leading-[0.95] font-black tracking-[-0.04em] uppercase">Commerce, <span class="text-cop">inside the wallet</span></h2>
+      <p class="mt-5 max-w-[760px] text-base leading-[1.8] text-ink2">
+        Anything a merchant can describe with text, buttons, lists and form fields can be an order page.
+        A few of the shapes it takes:
+      </p>
+    </div>
+  </div>
+
+  <div class="mx-auto grid max-w-[1400px] gap-5 px-6 py-12 sm:grid-cols-2 md:px-12 md:py-14 lg:grid-cols-3">
+    <article class="flex flex-col gap-3 border-[3px] border-ink bg-card p-5 shadow-s">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink text-white" style="background: var(--color-cop);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h3l2.5 10h9L20 9H7" /><circle cx="10" cy="20" r="1.4" /><circle cx="17" cy="20" r="1.4" /></svg>
+      </span>
+      <h3 class="m-0 font-space text-[0.9rem] font-extrabold tracking-[0.05em] uppercase">Menus and carts</h3>
+      <p class="m-0 text-[0.85rem] leading-[1.7] text-ink2">Browse what's on offer, pick options and quantities. The server keeps the running total and sends one invoice for the lot.</p>
+    </article>
+
+    <article class="flex flex-col gap-3 border-[3px] border-ink bg-card p-5 shadow-s">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink text-white" style="background: var(--color-coral);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11a2.5 2.5 0 0 1 2.5 2.5v8A2.5 2.5 0 0 1 14 20H3Z" /><path d="M3 11h12" /><path d="M20 8h1v9h-1" /><path d="M16.5 12.5h1.5" /></svg>
+      </span>
+      <h3 class="m-0 font-space text-[0.9rem] font-extrabold tracking-[0.05em] uppercase">Open amounts</h3>
+      <p class="m-0 text-[0.85rem] leading-[1.7] text-ink2">Tips, donations, top-ups: the customer types or picks the amount, and the invoice is for exactly that.</p>
+    </article>
+
+    <article class="flex flex-col gap-3 border-[3px] border-ink bg-card p-5 shadow-s">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink text-ink" style="background: var(--color-amber);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h16" /><path d="M6 9v11" /><path d="M18 9v11" /><path d="M8 5h8" /></svg>
+      </span>
+      <h3 class="m-0 font-space text-[0.9rem] font-extrabold tracking-[0.05em] uppercase">Tables and tills</h3>
+      <p class="m-0 text-[0.85rem] leading-[1.7] text-ink2">One QR code per table or till, each with its own claim. The server already knows the bill: it can show it, or go straight to the invoice.</p>
+    </article>
+
+    <article class="flex flex-col gap-3 border-[3px] border-ink bg-card p-5 shadow-s">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink text-white" style="background: var(--color-violet);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h11a4 4 0 0 1 0 8H7" /><path d="m7 5-3 4 3 4" /></svg>
+      </span>
+      <h3 class="m-0 font-space text-[0.9rem] font-extrabold tracking-[0.05em] uppercase">Refunds and cashback</h3>
+      <p class="m-0 text-[0.85rem] leading-[1.7] text-ink2">The server offers money with an invoice request. If the customer accepts, the wallet issues an invoice with its own keys and the server pays it.</p>
+    </article>
+
+    <article class="flex flex-col gap-3 border-[3px] border-ink bg-card p-5 shadow-s">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink text-white" style="background: var(--color-cop);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 8h6" /><path d="M9 12h6" /><path d="M12 17v2" /></svg>
+      </span>
+      <h3 class="m-0 font-space text-[0.9rem] font-extrabold tracking-[0.05em] uppercase">Unattended machines</h3>
+      <p class="m-0 text-[0.85rem] leading-[1.7] text-ink2">A vending machine or kiosk runs the server itself. Its QR code is all a customer needs: no website or domain name behind it.</p>
+    </article>
+
+    <article class="flex flex-col gap-3 border-[3px] border-ink bg-card p-5 shadow-s">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink text-ink" style="background: var(--color-lime);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9" /><path d="M20 4v4h-4" /><path d="M12 8v4.5l3 1.8" /></svg>
+      </span>
+      <h3 class="m-0 font-space text-[0.9rem] font-extrabold tracking-[0.05em] uppercase">Coming back to an order</h3>
+      <p class="m-0 text-[0.85rem] leading-[1.7] text-ink2">The wallet remembers each order's claim and id. Reconnect with them for a receipt, a delivery update, a refund, or another month of a membership.</p>
+    </article>
+  </div>
+
+  {# ---------------- no browser, no website ---------------- #}
+  <div class="border-t-[3px] border-ink bg-dark py-16 text-white md:py-20">
+    <div class="mx-auto grid max-w-[1400px] gap-12 px-6 md:px-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
+      <div>
+        <h3 class="m-0 max-w-[640px] font-outfit text-[clamp(1.7rem,3.4vw,2.7rem)] leading-[1] font-black tracking-[-0.03em] uppercase">No browser in the wallet. <span style="color: var(--color-lime);">No website for the merchant.</span></h3>
+        <p class="mt-6 max-w-[600px] text-base leading-[1.8] text-white/65">
+          The wallet draws every order page with its own native components, so it looks and behaves like
+          the rest of the wallet. The merchant needs no web server, no domain name and no certificate:
+          an iroh key is the address, and it works from a phone.
+        </p>
+      </div>
+      <div class="flex flex-col gap-6">
+        <div class="grid grid-cols-[auto_1fr] items-start gap-4">
+          <span class="flex h-6 w-6 shrink-0 items-center justify-center border-2 border-ink text-ink" style="background: var(--color-lime);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          </span>
+          <div>
+            <h4 class="m-0 font-space text-[0.95rem] font-extrabold tracking-[0.04em] uppercase">A small set of components</h4>
+            <p class="mt-1 text-[0.85rem] leading-[1.7] text-white/60">The page is <a class="underline decoration-2 underline-offset-2 hover:text-lime" href="https://hypereffect.dev">hypereffect</a>: text, buttons, text fields, checkboxes, lists, rows, columns, images and a few more. Small enough for any wallet to build with its own UI toolkit.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-[auto_1fr] items-start gap-4">
+          <span class="flex h-6 w-6 shrink-0 items-center justify-center border-2 border-ink text-ink" style="background: var(--color-amber);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          </span>
+          <div>
+            <h4 class="m-0 font-space text-[0.95rem] font-extrabold tracking-[0.04em] uppercase">The payment screen is the wallet's</h4>
+            <p class="mt-1 text-[0.85rem] leading-[1.7] text-white/60">The server can draw whatever page it likes, but not the payment screen. What you pay, and to whom, comes from the invoice, and your wallet shows it.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-[auto_1fr] items-start gap-4">
+          <span class="flex h-6 w-6 shrink-0 items-center justify-center border-2 border-ink text-ink" style="background: var(--color-coral);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          </span>
+          <div>
+            <h4 class="m-0 font-space text-[0.95rem] font-extrabold tracking-[0.04em] uppercase">Bring your own relay</h4>
+            <p class="mt-1 text-[0.85rem] leading-[1.7] text-white/60">A merchant can name their own iroh relay in the QR code, including one that is only reachable over Tor.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ========================== LIVE EXAMPLES ========================== #}
+<section class="relative scroll-mt-16 border-b-[3px] border-ink bg-bg" id="examples" data-examples>
+  <div class="mx-auto max-w-[1400px] px-6 pt-16 md:px-12 md:pt-20">
+    <div class="max-w-[820px]">
+      <div class="mb-4 flex items-center gap-3">
+        <span class="inline-block h-3 w-3" style="background: var(--color-cop);" aria-hidden="true"></span>
+        <p class="m-0 font-fira text-[0.7rem] font-bold tracking-[0.18em] uppercase text-ink2">Live examples</p>
+      </div>
+      <h2 class="m-0 font-outfit text-[clamp(2.1rem,4.5vw,3.6rem)] leading-[0.95] font-black tracking-[-0.04em] uppercase">Try an <span class="text-cop">order</span></h2>
+      <p class="mt-5 max-w-[700px] text-base leading-[1.8] text-ink2">
+        Pick a flow and tap through it. The phone shows what the wallet draws. Some flows are a whole
+        order; some are a single invoice with no page at all.
+      </p>
+    </div>
+  </div>
+
+  <div class="mx-auto grid max-w-[1400px] items-start gap-8 px-6 pt-10 pb-16 md:px-12 lg:grid-cols-[minmax(0,380px)_340px] lg:justify-center lg:gap-16">
+
+    {# ---------------- case menu ---------------- #}
+    <nav class="demo-menu" aria-label="Example flows" data-example-menu></nav>
+    <noscript>
+      <p class="m-0 border-[3px] border-ink bg-card px-5 py-4 text-[0.85rem] leading-[1.7] text-ink2">
+        The examples need JavaScript. The full message exchange for a pizza order is in the <a class="font-semibold text-copdeep underline" href="{{ spec_url }}">specification</a>.
+      </p>
+    </noscript>
+
+    {# ---------------- the client's screen: you drive it ---------------- #}
+    <div class="demo-pane" data-example-screen></div>
+  </div>
+
+  <div class="mx-auto max-w-[1400px] px-6 pb-16 md:px-12 md:pb-20">
+    <p class="m-0 max-w-[860px] text-[0.88rem] leading-[1.8] text-ink2">
+      The examples run in your browser, and nothing in them is a recording: totals and invoices follow
+      from what you tapped and typed. The message formats are in the
+      <a class="font-semibold text-copdeep underline" href="{{ spec_url }}">specification</a>.
+    </p>
+  </div>
+</section>
+
+{# ============================ ROADMAP ============================= #}
+<section class="scroll-mt-16 border-b-[3px] border-ink bg-dark py-16 text-white md:py-24" id="roadmap">
+  <div class="mx-auto grid max-w-[1400px] gap-12 px-6 md:px-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
+    <div>
+      <div class="mb-5 flex items-center gap-3">
+        <span class="inline-block h-3 w-3" style="background: var(--color-lime);" aria-hidden="true"></span>
+        <p class="m-0 font-fira text-[0.7rem] font-bold tracking-[0.18em] uppercase text-white/60">Roadmap</p>
+      </div>
+      <h2 class="m-0 max-w-[680px] font-outfit text-[clamp(2.1rem,4.5vw,3.6rem)] leading-[0.95] font-black tracking-[-0.04em] uppercase text-white">Where it <span style="color: var(--color-lime);">stands</span></h2>
+      <p class="mt-6 max-w-[600px] text-base leading-[1.8] text-white/65">
+        The {{ config.extra.spec_version }} draft is open for review. Feedback from people building
+        wallets and merchant software is the most useful thing right now.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a class="inline-flex items-center justify-center gap-2.5 border-[3px] border-ink px-7 py-3 font-space text-[0.8rem] font-bold tracking-[0.08em] uppercase no-underline shadow-copbright transition-[transform,box-shadow] duration-150 hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[1px_1px_0_#22b8cf]" style="background: var(--color-lime); color: var(--color-ink);" href="{{ spec_url }}">Read the spec</a>
+        <a class="inline-flex items-center justify-center gap-2.5 border-[3px] border-white/70 px-7 py-3 font-space text-[0.8rem] font-bold tracking-[0.08em] uppercase text-white no-underline hover:bg-white hover:text-ink" href="{{ config.extra.github_url }}/issues" target="_blank" rel="noopener noreferrer">Open an issue</a>
+      </div>
+    </div>
+    <ul class="m-0 flex list-none flex-col gap-6 p-0">
+      <li class="grid grid-cols-[auto_1fr] items-start gap-4">
+        <span class="flex h-6 w-6 shrink-0 items-center justify-center border-2 border-ink text-ink" style="background: var(--color-lime);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Done"><path d="M20 6 9 17l-5-5" /></svg>
+        </span>
+        <div>
+          <h3 class="m-0 font-space text-[0.95rem] font-extrabold tracking-[0.04em] uppercase">Specification</h3>
+          <p class="mt-1 text-[0.85rem] leading-[1.7] text-white/60">Draft {{ config.extra.spec_version }}: connection URIs, transport, sessions, invoices. The page itself is <a class="underline decoration-2 underline-offset-2 hover:text-lime" href="https://hypereffect.dev">hypereffect</a>.</p>
+        </div>
+      </li>
+      <li class="grid grid-cols-[auto_1fr] items-start gap-4">
+        <span class="flex h-6 w-6 shrink-0 items-center justify-center border-2 border-ink text-ink" style="background: var(--color-amber);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Planned"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+        </span>
+        <div>
+          <h3 class="m-0 font-space text-[0.95rem] font-extrabold tracking-[0.04em] uppercase">JSON schemas</h3>
+          <p class="mt-1 text-[0.85rem] leading-[1.7] text-white/60">Machine-readable schemas for the COP messages.</p>
+        </div>
+      </li>
+      <li class="grid grid-cols-[auto_1fr] items-start gap-4">
+        <span class="flex h-6 w-6 shrink-0 items-center justify-center border-2 border-ink text-ink" style="background: var(--color-amber);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Planned"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+        </span>
+        <div>
+          <h3 class="m-0 font-space text-[0.95rem] font-extrabold tracking-[0.04em] uppercase">Reference implementations</h3>
+          <p class="mt-1 text-[0.85rem] leading-[1.7] text-white/60">A server library and a native client renderer, to show the two sides working together.</p>
+        </div>
+      </li>
+      <li class="grid grid-cols-[auto_1fr] items-start gap-4">
+        <span class="flex h-6 w-6 shrink-0 items-center justify-center border-2 border-ink text-ink" style="background: var(--color-amber);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Planned"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+        </span>
+        <div>
+          <h3 class="m-0 font-space text-[0.95rem] font-extrabold tracking-[0.04em] uppercase">Conformance tests</h3>
+          <p class="mt-1 text-[0.85rem] leading-[1.7] text-white/60">A test suite for checking that servers and clients follow the spec.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+{% endblock content %}
