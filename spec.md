@@ -29,7 +29,7 @@ The client always opens the connection. The server cannot reach a client on its 
 
 Before the details, here is a complete exchange between a client and a server: a small pizza order that ends in a payment.
 
-1. The payer scans a QR code on a flyer. The client opens an iroh connection to the server named in it, and sends a `hello` with the `claim` from the QR code and a freshly generated `id` for this order, so the payer can come back to it later.
+1. The payer scans a QR code on a flyer. The client opens an iroh connection to the server named in it, and sends a `hello` with the parameters from the QR code (including the `claim`) and a freshly generated `id` for this order, so the payer can come back to it later.
 2. The server sends a pizza menu.
 3. The payer taps a pizza. The client sends an `action` to the server.
 4. The server updates the page: the chosen pizza, and a choice of extra topping (or none).
@@ -45,18 +45,19 @@ Every message is one line: a tag, a space, and a JSON object, as defined by hype
 The QR code on the flyer holds a [connection URI](#connection-uri):
 
 ```
-cop:5f1c9d0a27e4b6c38d2f71a09e4b5c6d8a3f2e1b0c9d8e7f6a5b4c3d2e1f0a9b?claim=flyer-2026-10&name=Luigi%27s%20Pizza
+cop://5f1c9d0a27e4b6c38d2f71a09e4b5c6d8a3f2e1b0c9d8e7f6a5b4c3d2e1f0a9b#claim=flyer-2026-10&name=Luigi%27s%20Pizza
 ```
 
-The client connects to the iroh endpoint in it and sends its `hello`: the `claim` from the URI, and an `id` it just generated for this order.
+The client connects to the iroh endpoint in it and sends its `hello`: the parameters from the URI (here, the `claim`), and an `id` it just generated for this order.
 
 ```
-hello {"claim":"flyer-2026-10","id":"f1K9xQ2v8Tn4LmZp7Rb3wq"}
+hello {"params":{"claim":"flyer-2026-10","name":"Luigi's Pizza"},"id":"f1K9xQ2v8Tn4LmZp7Rb3wq"}
 ```
 
-The server answers with the menu:
+The server says who it is, then answers with the menu:
 
 ```
+metadata {"name":"Luigi's Pizza","description":"Wood-fired pizza, Via Roma 12"}
 element {"id":"title","type":"text","variant":"h1","text":"Choose your pizza"}
 element {"id":"menu","type":"list"}
 element {"id":"margherita","type":"button","parent":"menu","label":"Margherita — $8.50","onPress":{"action":"selectPizza","payload":{"pizza":"margherita"}}}
@@ -130,9 +131,10 @@ The example above is the longest kind of flow, not a requirement. A flow is only
 
 #### Paying at the till
 
-The QR code on the till names the server and carries a `claim` identifying that till. The client connects, and the server, which already knows what is being bought there, sends an invoice straight away. The client shows its payment screen, the payer pays, and the flow is over. No element was ever sent.
+The QR code on the till names the server and carries a `claim` identifying that till. The client connects, and the server, which already knows what is being bought there, sends its `metadata` and an invoice straight away. The client shows its payment screen, the payer pays, and the flow is over. No element was ever sent.
 
 ```
+metadata {"name":"Luigi's Pizza","description":"Till 2"}
 invoice {"invoice":"cassis:eyJhbGciOiJFZERTQSJ9.till-2b71","memo":"1 × flat white"}
 ```
 
@@ -176,29 +178,31 @@ Step 2 is the UI half of the protocol and steps 3–4 the money half. Either may
 A server publishes its order endpoint as a URI, usually printed or displayed as a QR code: on a flyer, a table, a till, a vending machine, or the merchant's phone screen.
 
 ```
-cop:<endpoint-id>?<parameters>
+cop://<endpoint-id>[?_relay=<relay-url>][#<parameters>]
 ```
 
 - `<endpoint-id>` (required): the server's iroh endpoint ID — its Ed25519 public key, as 64 lowercase hexadecimal characters. This is the only thing the client needs to reach the server and to know it is talking to the right one: iroh authenticates the connection against this key.
-- Parameters, all optional and percent-encoded:
-  - `relay`: the URL of an iroh relay to reach the server through, instead of the client's default relays. A merchant who cares about privacy can run their own relay, including one reachable only over Tor: a relay URL whose host is a `.onion` address means the client must connect to it through Tor.
+- `_relay` (optional, in the query): the URL of an iroh relay to reach the server through, instead of the client's default relays. A merchant who cares about privacy can run their own relay, including one reachable only over Tor: a relay URL whose host is a `.onion` address means the client must connect to it through Tor. It is the only query parameter COP defines. The underscore marks it as addressing the connection rather than the order, so it is consumed by the client and **never sent** in the `hello`. The value is percent-encoded. Other query parameters are ignored.
+- `<parameters>` (optional): a list of `key=value` pairs joined by `&`, in the fragment, as in a [hyperb](https://github.com/andunieee/hyperb) address. Keys and values are strings, percent-decoded as UTF-8, and a value may be empty. A pair without `=`, a pair with an empty key, an empty pair, a repeated key and a value that is not UTF-8 make the URI invalid. An empty fragment is the same as none. The fragment is part of the URI, not of the endpoint: the same server with other parameters is still the same server. The parameters defined by COP are:
   - `claim`: a string the client sends back unchanged in its `hello`. See [Sessions, claims and order ids](#sessions-claims-and-order-ids).
-  - `name`: a display name for the server, which the client may show before and while connected. It is the server's own description of itself and is not verified.
+  - `name`: a display name for the server, which the client may show before it has connected. Once the server sends its hypereffect `metadata`, that replaces it. It is not verified.
 
-Clients must ignore parameters they do not recognise.
+There is no path: the endpoint ID alone selects the server. Clients must ignore parameters they do not recognise, but still send them in the `hello` (see [Transport](#transport)).
+
+`cop://` is the only scheme. The scheme name is case-insensitive, and the endpoint ID is case-insensitive too: clients lowercase it.
 
 **Examples:**
 
 ```
-cop:5f1c9d0a27e4b6c38d2f71a09e4b5c6d8a3f2e1b0c9d8e7f6a5b4c3d2e1f0a9b
+cop://5f1c9d0a27e4b6c38d2f71a09e4b5c6d8a3f2e1b0c9d8e7f6a5b4c3d2e1f0a9b
 ```
 
 ```
-cop:5f1c9d0a27e4b6c38d2f71a09e4b5c6d8a3f2e1b0c9d8e7f6a5b4c3d2e1f0a9b?claim=table-12&name=Luigi%27s%20Pizza
+cop://5f1c9d0a27e4b6c38d2f71a09e4b5c6d8a3f2e1b0c9d8e7f6a5b4c3d2e1f0a9b#claim=table-12&name=Luigi%27s%20Pizza
 ```
 
 ```
-cop:5f1c9d0a27e4b6c38d2f71a09e4b5c6d8a3f2e1b0c9d8e7f6a5b4c3d2e1f0a9b?relay=http%3A%2F%2Fexampleonionrelayaddressxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.onion&claim=till-3
+cop://5f1c9d0a27e4b6c38d2f71a09e4b5c6d8a3f2e1b0c9d8e7f6a5b4c3d2e1f0a9b?_relay=http%3A%2F%2Fexampleonionrelayaddressxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.onion#claim=till-3
 ```
 
 ---
@@ -207,10 +211,10 @@ cop:5f1c9d0a27e4b6c38d2f71a09e4b5c6d8a3f2e1b0c9d8e7f6a5b4c3d2e1f0a9b?relay=http%
 
 A single transport is defined: an **iroh** connection using the ALPN `cassis-order`.
 
-- The **client** always initiates. It dials the endpoint ID from the connection URI with the ALPN `cassis-order`, through the URI's `relay` if one is given.
+- The **client** always initiates. It dials the endpoint ID from the connection URI with the ALPN `cassis-order`, through the URI's `_relay` query parameter if one is given.
 - The client opens one bidirectional stream on the connection. Everything in the flow travels over that stream, in both directions, as hypereffect lines written directly to the stream.
-- The **first line** the client sends is the hypereffect `hello`. COP adds two optional string members to it:
-  - `claim`: the `claim` from the connection URI, unchanged. Omitted if the URI had none.
+- The **first line** the client sends is the hypereffect `hello`. COP adds two optional members to it:
+  - `params`: an object holding the fragment parameters of the connection URI, as strings, percent-decoded. The client sends them once, here, and never again. Omitted if the URI had none. The server finds the `claim` in `params.claim`.
   - `id`: the identifier of this order flow, generated by the client. Omitted for a throwaway flow that nobody can come back to.
 - The flow ends when either side closes the connection.
 
@@ -221,14 +225,14 @@ hello {}
 ```
 
 ```
-hello {"claim":"table-12","id":"f1K9xQ2v8Tn4LmZp7Rb3wq"}
+hello {"params":{"claim":"table-12","name":"Luigi's Pizza"},"id":"f1K9xQ2v8Tn4LmZp7Rb3wq"}
 ```
 
 ---
 
 ## Sessions, claims and order ids
 
-Every flow is one conversation about one thing: an order, a bill, a membership. Payers like to be able to come back to it, so the two COP members of the `hello` name it.
+Every flow is one conversation about one thing: an order, a bill, a membership. Payers like to be able to come back to it, so the `claim` parameter and the `id` member of the `hello` name it.
 
 - The **`claim`** comes from the server, through the connection URI. It is whatever the server needs to tell its order pages apart: a table number, a till, a flyer campaign, a customer token, or nothing at all. The client treats it as an opaque string and only sends it back.
 - The **`id`** is generated by the **client**. It names *this* flow at this server. Two orders with the same `claim` but different `id`s are two different orders; a client that reconnects with the same `(claim, id)` pair is asking for the same order again.
@@ -329,5 +333,5 @@ The security considerations of hypereffect apply. In addition:
 - **Only the client's payment screen is trustworthy.** Everything on the page is drawn by the server, including text that says what something costs. The client must take the amount, currency and payee it shows for a payment from the invoice itself, and must show its payment screen in a way the server cannot imitate with elements.
 - **Actions are payer input.** The client fills in an action's payload and signals, so a modified client can put anything there. Servers must not take prices, totals or anything else they would not accept from a stranger from them; the examples in this document send only *what* was chosen, and the server prices it.
 - **`(claim, id)` is a bearer token.** Anyone who has the pair can reopen the order. Clients must generate `id`s with at least 128 bits of randomness and keep them private. Servers should not put more in a reopened order than its holder ought to see.
-- **Remote images leak the payer's network address.** `image` elements load from URLs the server chooses. Fetching them reveals the payer's IP address to whoever hosts them, even when the iroh connection itself goes through a Tor relay. Clients should let payers turn remote images off, and should not load them when the connection URI named a `.onion` relay.
-- **`name` is unverified.** The `name` parameter of a connection URI is whatever the server says it is called. What identifies a server is its endpoint ID, and what identifies a payee is the invoice.
+- **Remote images leak the payer's network address.** `image` elements, and the `icon` of `metadata`, load from URLs the server chooses. Fetching them reveals the payer's IP address to whoever hosts them, even when the iroh connection itself goes through a Tor relay. Clients should let payers turn remote images off, and should not load them when the connection URI named a `.onion` `_relay`.
+- **`name` is unverified.** The `name` parameter of a connection URI and the `name` in `metadata` are whatever the server says it is called. What identifies a server is its endpoint ID, and what identifies a payee is the invoice.
