@@ -232,41 +232,56 @@
 </section>
 
 {# ========================== LIVE EXAMPLES ========================== #}
-<section class="relative scroll-mt-16 border-b-[3px] border-ink bg-bg" id="examples" data-examples>
+<section class="relative scroll-mt-16 border-b-[3px] border-ink bg-bg" id="examples" data-examples data-scene="{{ get_url(path='scene.png') }}">
   <div class="mx-auto max-w-[1400px] px-6 pt-16 md:px-12 md:pt-20">
     <div class="max-w-[820px]">
       <div class="mb-4 flex items-center gap-3">
         <span class="inline-block h-3 w-3" style="background: var(--color-cop);" aria-hidden="true"></span>
-        <p class="m-0 font-fira text-[0.7rem] font-bold tracking-[0.18em] uppercase text-ink2">Live examples</p>
+        <p class="m-0 font-fira text-[0.7rem] font-bold tracking-[0.18em] uppercase text-ink2">Interactive examples</p>
       </div>
-      <h2 class="m-0 font-outfit text-[clamp(2.1rem,4.5vw,3.6rem)] leading-[0.95] font-black tracking-[-0.04em] uppercase">Try an <span class="text-cop">order</span></h2>
+      <h2 class="m-0 font-outfit text-[clamp(2.1rem,4.5vw,3.6rem)] leading-[0.95] font-black tracking-[-0.04em] uppercase">Scan a <span class="text-cop">code</span></h2>
       <p class="mt-5 max-w-[700px] text-base leading-[1.8] text-ink2">
-        Pick a flow and tap through it. The phone shows what the wallet draws. Some flows are a whole
-        order; some are a single invoice with no page at all.
+        The phone is the wallet, and its camera is pointed at a café terrace. Drag the picture until a
+        QR code sits in the frame, then tap through what opens. Some codes open a whole order; one is a
+        single invoice with no page at all.
       </p>
     </div>
   </div>
 
-  <div class="mx-auto grid max-w-[1400px] items-start gap-8 px-6 pt-10 pb-16 md:px-12 lg:grid-cols-[minmax(0,380px)_340px] lg:justify-center lg:gap-16">
+  <div class="mx-auto grid max-w-[1400px] items-start gap-8 px-6 pt-10 pb-16 md:grid-cols-[minmax(0,1fr)_340px] md:px-12 lg:grid-cols-[minmax(0,380px)_340px] lg:justify-center lg:gap-16">
 
-    {# ---------------- case menu ---------------- #}
-    <nav class="demo-menu" aria-label="Example flows" data-example-menu></nav>
-    <noscript>
-      <p class="m-0 border-[3px] border-ink bg-card px-5 py-4 text-[0.85rem] leading-[1.7] text-ink2">
-        The examples need JavaScript. The full message exchange for a pizza order is in the <a class="font-semibold text-copdeep underline" href="{{ spec_url }}">specification</a>.
-      </p>
-    </noscript>
+    {# ---------------- what is in the picture ---------------- #}
+    <ol class="demo-menu m-0 hidden list-none p-0 md:flex" aria-label="QR codes in the picture">
+      <li class="demo-case" data-code="market">
+        <span class="demo-case-num">01</span>
+        <span class="demo-case-name">The laptop</span>
+        <span class="demo-case-blurb">An online shop's checkout. An invoice for the cart comes straight back, with no page at all.</span>
+      </li>
+      <li class="demo-case" data-code="tip">
+        <span class="demo-case-num">02</span>
+        <span class="demo-case-name">The tip sign</span>
+        <span class="demo-case-blurb">The street musician's tip jar: a form with an amount, a name and a request. The invoice is for whatever you typed.</span>
+      </li>
+      <li class="demo-case" data-code="table">
+        <span class="demo-case-num">03</span>
+        <span class="demo-case-name">Table 21</span>
+        <span class="demo-case-blurb">The café's menu. Order straight to your table and pay in sats for prices set in dollars.</span>
+      </li>
+      <li class="demo-case" data-code="gym">
+        <span class="demo-case-num">04</span>
+        <span class="demo-case-name">The gym card</span>
+        <span class="demo-case-blurb">Your membership. Pay for next month, or cancel and get the unused days back.</span>
+      </li>
+    </ol>
 
     {# ---------------- the client's screen: you drive it ---------------- #}
-    <div class="demo-pane" data-example-screen></div>
-  </div>
-
-  <div class="mx-auto max-w-[1400px] px-6 pb-16 md:px-12 md:pb-20">
-    <p class="m-0 max-w-[860px] text-[0.88rem] leading-[1.8] text-ink2">
-      The examples run in your browser, and nothing in them is a recording: totals and invoices follow
-      from what you tapped and typed. The message formats are in the
-      <a class="font-semibold text-copdeep underline" href="{{ spec_url }}">specification</a>.
-    </p>
+    <div class="demo-pane" data-example-screen>
+      <noscript>
+        <p class="m-0 border-[3px] border-ink bg-card px-5 py-4 text-[0.85rem] leading-[1.7] text-ink2">
+          The examples need JavaScript. The full message exchange for a pizza order is in the <a class="font-semibold text-copdeep underline" href="{{ spec_url }}">specification</a>.
+        </p>
+      </noscript>
+    </div>
   </div>
 </section>
 {% endblock content %}

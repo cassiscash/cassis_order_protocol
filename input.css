@@ -213,11 +213,8 @@
     background: var(--color-card);
     padding: 0.7rem 0.8rem;
     text-align: left;
-    cursor: pointer;
     transition: background-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
   }
-
-  .demo-case:hover { background: var(--color-alt); }
 
   .demo-case-num {
     grid-row: span 2;
@@ -299,6 +296,156 @@
   }
 
   .demo-phone.is-pay .demo-status { color: #fff; }
+
+  /* the wallet's bar over a merchant's page: the code it dialed, and a way out */
+  .demo-bar {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.25rem 0.9rem 0;
+    padding-bottom: 0.45rem;
+    border-bottom: 2px solid var(--color-ink);
+    color: var(--color-ink);
+  }
+
+  .demo-phone.is-pay .demo-bar { border-color: rgba(255, 255, 255, 0.25); color: #fff; }
+
+  .demo-bar-close {
+    display: flex;
+    flex-shrink: 0;
+    width: 1.6rem;
+    height: 1.6rem;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    background: none;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .demo-bar-uri {
+    min-width: 0;
+    overflow: hidden;
+    font-family: var(--font-fira);
+    font-size: 0.66rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 0.75;
+  }
+
+  /* ---- the wallet's home: its camera ---- */
+
+  .wallet-head { display: flex; align-items: baseline; justify-content: space-between; }
+
+  .wallet-kicker {
+    margin: 0;
+    font-family: var(--font-space);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink2);
+  }
+
+  .wallet-balance { margin: 0; font-family: var(--font-outfit); font-size: 1.15rem; font-weight: 900; }
+
+  .scan-view {
+    position: relative;
+    min-height: 220px;
+    flex: 1;
+    overflow: hidden;
+    border: 2px solid var(--color-ink);
+    border-radius: 1rem;
+    background: #6b5a45;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .scan-view.is-dragging { cursor: grabbing; }
+
+  .scan-view:focus-visible { outline: 3px solid var(--color-cop); outline-offset: 2px; }
+
+  .scan-scene {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1024px;
+    height: 768px;
+    transform-origin: 0 0;
+  }
+
+  .scan-img { display: block; width: 1024px; max-width: none; height: 768px; pointer-events: none; }
+
+  .scan-code { position: absolute; pointer-events: none; }
+
+  .scan-frame {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--frame);
+    height: var(--frame);
+    transform: translate(-50%, -50%);
+    border: 3px solid #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 0 999px rgb(0 0 0 / 0.38);
+    pointer-events: none;
+    transition: border-color 0.15s, background-color 0.15s;
+  }
+
+  .scan-frame::after {
+    content: "";
+    position: absolute;
+    right: 6px;
+    left: 6px;
+    height: 2px;
+    background: var(--color-lime);
+    animation: scanline 1.6s ease-in-out infinite alternate;
+  }
+
+  .scan-frame.is-locked { border-color: var(--color-amber); }
+  .scan-frame.is-read { border-color: var(--color-lime); background: rgb(179 217 74 / 0.3); }
+
+  @keyframes scanline {
+    from { top: 6px; }
+    to { top: calc(100% - 8px); }
+  }
+
+  .scan-hint {
+    position: absolute;
+    right: 0;
+    bottom: 8px;
+    left: 0;
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-align: center;
+    color: #fff;
+    text-shadow: 0 1px 3px rgb(0 0 0 / 0.8);
+    pointer-events: none;
+  }
+
+  .scan-alt {
+    margin: 0;
+    font-size: 0.7rem;
+    line-height: 1.5;
+    color: var(--color-ink2);
+  }
+
+  .scan-alt button {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-weight: 700;
+    color: var(--color-copdeep);
+    text-decoration: underline;
+    cursor: pointer;
+  }
 
   .demo-status-icons { display: flex; align-items: center; gap: 0.35rem; }
 
@@ -487,6 +634,15 @@
   }
 
   .screen-row.is-picked::after { content: "✓"; font-size: 0.8rem; }
+
+  .screen-count {
+    margin-left: 0.45rem;
+    padding: 0 0.3rem;
+    border: 1.5px solid var(--color-ink);
+    background: var(--color-lime);
+    font-family: var(--font-fira);
+    font-size: 0.66rem;
+  }
 
   .screen-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 
@@ -705,6 +861,8 @@
 
   .pay-btn:hover { transform: translateY(-1px); }
 
+  .pay-btn-quiet { background: none; color: #fff; }
+
   .pay-btn.is-picked { background: var(--color-copbright); transform: scale(0.98); }
 
   .pay-done {
@@ -765,7 +923,8 @@
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
 
-    .screen-caret {
+    .screen-caret,
+    .scan-frame::after {
       animation: none;
     }
 

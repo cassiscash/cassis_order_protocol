@@ -1,11 +1,12 @@
-/* Cassis Order Protocol — five live examples.
+/* Cassis Order Protocol — four live examples.
  *
  * Nothing here is a recording. The server describes a page, the person
  * poking at it decides what happens next, and the server answers with
  * whatever that implies. Prices, totals and invoices are all worked out
  * from what was actually tapped and typed.
  *
- * Each example is its own merchant, with its own server, and none of them
+ * The wallet starts on its camera, pointed at a café terrace. Each QR code
+ * in the picture is its own merchant, with its own server, and none of them
  * knows about the others.
  */
 (() => {
@@ -17,8 +18,8 @@
   const q = (sel) => root.querySelector(sel);
 
   const ui = {
-    menu: q('[data-example-menu]'),
-    screen: q('[data-example-screen]')
+    screen: q('[data-example-screen]'),
+    codes: Array.from(root.querySelectorAll('[data-code]'))
   };
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -26,47 +27,44 @@
   const SATS_PER_USD = 4000;
   const sats = (n) => Math.round(n * SATS_PER_USD).toLocaleString('en-GB') + ' sats';
 
+  /* the camera's view: scene.png at its own size, and the scan frame */
+  const SCENE_SRC = root.dataset.scene;
+  const SCENE_W = 1024;
+  const SCENE_H = 768;
+  const FRAME = 150;
+
   /* tip jar */
   const PRESETS = [2, 5, 10];
 
-  /* ramen bar, table 12 */
-  const BILL_ITEMS = [
-    ['2 × Shoyu ramen', 22],
-    ['1 × Gyoza', 5.5],
-    ['1 × Iced green tea', 3]
-  ];
-  const BILL = BILL_ITEMS.reduce((sum, line) => sum + line[1], 0);
-  const TIPS = { none: 0, ten: 0.1, twenty: 0.2 };
+  /* terrace café, table 21 */
+  const CAFE = {
+    espresso: { name: 'Espresso', price: 2.2 },
+    cappuccino: { name: 'Cappuccino', price: 3.5 },
+    lemonade: { name: 'Lemonade', price: 4 },
+    croissant: { name: 'Croissant', price: 2.8 },
+    sandwich: { name: 'Club sandwich', price: 8.5 }
+  };
 
-  /* pizza delivery */
-  const PIZZAS = {
-    margherita: { name: 'Margherita', price: 8.5 },
-    pepperoni: { name: 'Pepperoni', price: 10 },
-    funghi: { name: 'Funghi', price: 9.5 }
-  };
-  const TOPPINGS = {
-    none: { name: 'No extra topping', price: 0 },
-    olives: { name: 'Olives', price: 1 },
-    chili: { name: 'Chili', price: 0.75 }
-  };
+  /* the cart on the laptop's screen */
+  const CART = 197;
 
   /* gym membership */
   const MONTH = 40;
   const UNUSED_DAYS = 18;
   const REFUND = (MONTH * UNUSED_DAYS) / 30;
 
-  const pizza = (c) => PIZZAS[c.pizza] || null;
-  const extra = (c) => TOPPINGS[c.topping] || TOPPINGS.none;
-  const total = (c) => (pizza(c) ? pizza(c).price : 0) + extra(c).price;
-  const summary = (c) =>
-    (pizza(c) ? pizza(c).name : '') + (c.topping && c.topping !== 'none' ? ' + ' + extra(c).name.toLowerCase() : '');
-
   const given = (c) => {
     const amount = parseFloat(c.amount);
     return Number.isFinite(amount) && amount > 0 ? amount : 0;
   };
-  const tipAmount = (c) => Math.round(BILL * (TIPS[c.tip] || 0) * 100) / 100;
-  const billTotal = (c) => BILL + tipAmount(c);
+
+  const cart = (c) => c.cart || {};
+  const cartCount = (c) => Object.values(cart(c)).reduce((sum, n) => sum + n, 0);
+  const cartTotal = (c) => Object.keys(cart(c)).reduce((sum, id) => sum + CAFE[id].price * cart(c)[id], 0);
+  const cartSummary = (c) =>
+    Object.keys(cart(c))
+      .map((id) => cart(c)[id] + ' × ' + CAFE[id].name.toLowerCase())
+      .join(', ');
 
   /* ------------------------------------------------------------------ *
    * dom helpers
@@ -127,17 +125,6 @@
 
   const rowLine = (text) => h('p', 'screen-line', text);
 
-  const items = (lines, from) => {
-    const list = h('div', 'screen-items');
-    lines.forEach((line, i) => {
-      const row = h('div', 'screen-item');
-      row.append(h('span', null, line[0]), h('span', null, line[1]));
-      at(row, from + i * 0.04);
-      list.append(row);
-    });
-    return list;
-  };
-
   /* ------------------------------------------------------------------ *
    * the wallet's own screens
    *
@@ -162,7 +149,7 @@
     return box;
   }
 
-  /* the screen once the money has moved: it stays up until you leave */
+  /* the screen once the money has moved: it stays up until you close it */
   function settled({ heading, amount, line, memo, note }) {
     const box = h('div', 'pay-done');
     box.append(
@@ -173,15 +160,15 @@
       at(h('p', 'pay-memo', memo), 0.32)
     );
     if (note) box.append(at(h('p', 'pay-fine', note), 0.4));
-    return box;
+    return [box, at(btn('pay-btn pay-btn-quiet', 'Done', 'close'), 0.46)];
   }
 
   /* an invoice arrived: the wallet's payment screen */
-  function payScreen({ to, amount, memo, done = false }) {
+  function payScreen({ to, amount, memo, note, done = false }) {
     if (done) {
       return {
         pay: true,
-        body: [h('p', 'pay-top', 'Payment sent'), settled({ heading: 'Paid', amount, line: 'to ' + to, memo })]
+        body: [h('p', 'pay-top', 'Payment sent'), ...settled({ heading: 'Paid', amount, line: 'to ' + to, memo, note })]
       };
     }
     return {
@@ -204,7 +191,7 @@
         pay: true,
         body: [
           h('p', 'pay-top', 'Payment received'),
-          settled({
+          ...settled({
             heading: 'Received',
             amount: '+' + amount,
             line: 'from ' + from,
@@ -227,6 +214,134 @@
     };
   }
 
+  /* the wallet's home: its camera, looking at the terrace.
+   *
+   * Dragging moves the picture under a fixed scan frame; a code that sits
+   * fully inside the frame for half a second is read. */
+  function home() {
+    const scene = h('div', 'scan-scene');
+    const img = h('img', 'scan-img');
+    img.src = SCENE_SRC;
+    img.alt = '';
+    img.draggable = false;
+    scene.append(img);
+
+    const targets = Object.keys(FLOWS).map((id) => {
+      const [left, top, right, bottom] = FLOWS[id].box;
+      const spot = h('span', 'scan-code');
+      Object.assign(spot.style, { left: left + 'px', top: top + 'px', width: right - left + 'px', height: bottom - top + 'px' });
+      scene.append(spot);
+      return [spot, id];
+    });
+
+    const frame = h('div', 'scan-frame');
+    frame.style.setProperty('--frame', FRAME + 'px');
+    const hint = h('p', 'scan-hint', 'Drag to aim the camera at a code');
+    const view = h('div', 'scan-view');
+    view.tabIndex = 0;
+    view.setAttribute('role', 'application');
+    view.setAttribute('aria-label', 'Camera view of a café terrace with four QR codes. Drag, or use the arrow keys, to aim at one.');
+    view.append(scene, frame, hint);
+
+    /* the camera remembers where it was pointing; what is already in the
+       frame when you come back is not read until you move */
+    let { x, y } = camera;
+    let drag = null;
+    let aimed;
+    let timer = 0;
+    let read = false;
+
+    /* the picture never slides past its own edges, so the camera zooms in
+       just enough for the frame to reach the codes nearest the border */
+    const zoom = () => {
+      const reach = (v, margin) => ((v - FRAME) / 2 + 8) / margin;
+      const vw = view.clientWidth;
+      const vh = view.clientHeight;
+      return Math.max(
+        1,
+        ...Object.values(FLOWS).flatMap(({ box: [left, top, right, bottom] }) => [
+          reach(vw, left),
+          reach(vh, top),
+          reach(vw, SCENE_W - right),
+          reach(vh, SCENE_H - bottom)
+        ])
+      );
+    };
+
+    const move = (nx, ny) => {
+      const z = zoom();
+      x = Math.min(0, Math.max(view.clientWidth - SCENE_W * z, nx));
+      y = Math.min(0, Math.max(view.clientHeight - SCENE_H * z, ny));
+      camera.x = x;
+      camera.y = y;
+      scene.style.transform = `translate(${x}px, ${y}px) scale(${z})`;
+      check();
+    };
+
+    function check() {
+      if (read) return;
+      const f = frame.getBoundingClientRect();
+      const inside = (r) => r.left >= f.left && r.right <= f.right && r.top >= f.top && r.bottom <= f.bottom;
+      const hit = targets.find(([spot]) => inside(spot.getBoundingClientRect()))?.[1] ?? null;
+      if (aimed === undefined) {
+        aimed = hit;
+        return;
+      }
+      if (hit === aimed) return;
+      aimed = hit;
+      clearTimeout(timer);
+      frame.classList.toggle('is-locked', Boolean(hit));
+      if (hit) {
+        timer = setTimeout(() => {
+          read = true;
+          frame.classList.add('is-read');
+          setTimeout(() => view.isConnected && scan(hit), 250);
+        }, 500);
+      }
+    }
+
+    view.addEventListener('pointerdown', (event) => {
+      drag = { dx: event.clientX - x, dy: event.clientY - y };
+      view.setPointerCapture(event.pointerId);
+      view.classList.add('is-dragging');
+      hint.hidden = true;
+    });
+    view.addEventListener('pointermove', (event) => drag && move(event.clientX - drag.dx, event.clientY - drag.dy));
+    const end = () => {
+      drag = null;
+      view.classList.remove('is-dragging');
+    };
+    view.addEventListener('pointerup', end);
+    view.addEventListener('pointercancel', end);
+
+    const STEP = { ArrowLeft: [1, 0], ArrowRight: [-1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] };
+    view.addEventListener('keydown', (event) => {
+      const step = STEP[event.key];
+      if (!step) return;
+      event.preventDefault();
+      hint.hidden = true;
+      move(x + step[0] * 16, y + step[1] * 16);
+    });
+
+    requestAnimationFrame(() => {
+      if (camera.x == null) move((view.clientWidth - SCENE_W * zoom()) / 2, (view.clientHeight - SCENE_H * zoom()) / 2);
+      else move(camera.x, camera.y);
+    });
+
+    const alt = h('p', 'scan-alt');
+    alt.append(document.createTextNode("Can't drag? Scan "));
+    Object.keys(FLOWS).forEach((id, i, ids) => {
+      if (i > 0) alt.append(document.createTextNode(i === ids.length - 1 ? ' or ' : ', '));
+      alt.append(btn(null, FLOWS[id].label, 'scan:' + id));
+    });
+    alt.append(document.createTextNode('.'));
+
+    const head = h('div', 'wallet-head');
+    head.append(h('p', 'wallet-kicker', 'Your wallet'), h('p', 'wallet-balance', '212,400 sats'));
+
+    return { home: true, body: [head, h('p', 'screen-label', 'Scan a code'), view, alt] };
+  }
+
   /* ------------------------------------------------------------------ *
    * surfaces: what the servers describe
    * ------------------------------------------------------------------ */
@@ -247,111 +362,49 @@
       surface: 'tip_jar',
       body: [
         h('p', 'screen-note', 'server → client · element'),
-        at(h('p', 'screen-title', 'Tip the band'), 0.05),
-        at(h('p', 'screen-sub', 'The Lanterns, playing on the square tonight'), 0.1),
+        at(h('p', 'screen-title', 'Keep the music alive'), 0.05),
+        at(h('p', 'screen-sub', 'Leo, live on the square this afternoon'), 0.1),
         at(label('How much?'), 0.16),
         at(presets, 0.22),
         at(field('amount', '0.00'), 0.32),
         at(label('Your name (optional)'), 0.38),
         at(field('name', 'Anon'), 0.42),
-        at(label('A message (optional)'), 0.46),
-        at(field('message', 'play the encore'), 0.5),
+        at(label('A request (optional)'), 0.46),
+        at(field('message', 'play one more'), 0.5),
         at(btn('screen-btn screen-btn-lime screen-btn-wide', 'Send the tip', 'submit', { needs: 'amount' }), 0.58),
         at(code('"bind": ', '"tip.amount"'), 0.66)
       ]
     };
   }
 
-  /* ramen bar: a bill in dollars, a tip you choose, the same bill in sats */
-  function bill(c) {
-    const lines = BILL_ITEMS.map((line) => [line[0], usd(line[1])]);
-    const body = [
-      h('p', 'screen-note', 'server → client · ' + (c.tip ? 'signal' : 'element')),
-      at(h('p', 'screen-title', 'Table 12'), 0.05),
-      at(items(lines, 0.12), 0.12),
-      at(money('Subtotal', usd(BILL)), 0.26)
-    ];
-
-    const chips = h('div', 'screen-chips');
-    Object.keys(TIPS).forEach((id, i) => {
-      const name = id === 'none' ? 'No tip' : id === 'ten' ? '10%' : '20%';
-      const chosen = (c.tip || 'none') === id;
-      const chip = h('button', 'screen-chip screen-chip-money' + (chosen ? ' is-picked' : ''));
-      chip.append(h('span', null, name), h('em', null, chosen ? usd(tipAmount({ ...c, tip: id })) : 'tap to add'));
-      at(chip, 0.34 + i * 0.06);
-      tap(chip, 'tip:' + id);
-      chips.append(chip);
-    });
-
-    body.push(
-      at(label('Add a tip'), 0.3),
-      at(chips, 0.34),
-      at(money('Total', usd(billTotal(c))), 0.44),
-      at(h('p', 'screen-total-sats', sats(billTotal(c))), 0.5),
-      at(btn('screen-btn screen-btn-lime screen-btn-wide', 'Pay ' + usd(billTotal(c)), 'pay'), 0.58)
-    );
-    return { surface: 'table_12', body };
-  }
-
-  /* pizza delivery: menu, toppings, address */
-  function menu() {
+  /* table 21: the café's menu, ordered straight to the table */
+  function cafeMenu(c) {
     const list = h('div', 'screen-list');
-    Object.keys(PIZZAS).forEach((id, i) => {
-      const row = h('button', 'screen-row');
-      row.append(h('span', null, PIZZAS[id].name), h('span', 'screen-price', usd(PIZZAS[id].price)));
-      at(row, 0.18 + i * 0.1);
-      tap(row, 'pizza:' + id);
+    Object.keys(CAFE).forEach((id, i) => {
+      const count = cart(c)[id] || 0;
+      const row = h('button', 'screen-row' + (count ? ' has-count' : ''));
+      const name = h('span', null, CAFE[id].name);
+      if (count) name.append(h('b', 'screen-count', '× ' + count));
+      row.append(name, h('span', 'screen-price', usd(CAFE[id].price)));
+      at(row, 0.14 + i * 0.05);
+      tap(row, 'add:' + id);
       list.append(row);
     });
-    return {
-      surface: 'pizza_menu',
-      body: [
-        h('p', 'screen-note', 'server → client · element'),
-        at(h('p', 'screen-title', 'Choose your pizza'), 0.05),
-        at(list, 0.18),
-        at(code('each row: button → action ', 'selectPizza { "pizza": … }'), 0.6)
-      ]
-    };
-  }
 
-  function toppings(c) {
-    const chips = h('div', 'screen-chips');
-    Object.keys(TOPPINGS).forEach((id, i) => {
-      const chip = h('button', 'screen-chip' + (id === 'none' ? ' screen-chip-quiet' : ''));
-      chip.append(h('span', null, TOPPINGS[id].name), h('em', null, id === 'none' ? '' : '+' + usd(TOPPINGS[id].price)));
-      at(chip, 0.3 + i * 0.1);
-      tap(chip, 'topping:' + id);
-      chips.append(chip);
-    });
-    return {
-      surface: 'pizza_menu',
-      body: [
-        h('p', 'screen-note', 'server → client · element'),
-        at(h('p', 'screen-title', 'Your order'), 0.05),
-        at(rowLine(pizza(c).name + ' — ' + usd(pizza(c).price)), 0.14),
-        at(h('p', 'screen-sub', 'Add an extra topping?'), 0.24),
-        at(chips, 0.3)
-      ]
-    };
-  }
-
-  function checkout(c) {
-    const model = h('p', 'screen-mono screen-mono-dim');
-    model.dataset.show = 'address';
-    return {
-      surface: 'pizza_menu',
-      body: [
-        h('p', 'screen-note', 'server → client · element'),
-        at(h('p', 'screen-title', 'Where should we deliver?'), 0.05),
-        at(rowLine(summary(c)), 0.12),
-        at(money('Total', usd(total(c))), 0.2),
-        at(label('Delivery address'), 0.26),
-        at(field('address', '221B Baker St, London'), 0.32),
-        at(model, 0.38),
-        at(btn('screen-btn screen-btn-lime screen-btn-wide', 'Pay ' + usd(total(c)), 'pay', { needs: 'address' }), 0.46),
-        at(code('"bind": ', '"order.address"'), 0.54)
-      ]
-    };
+    const body = [
+      h('p', 'screen-note', 'server → client · element'),
+      at(h('p', 'screen-title', 'Terrace Café · Table 21'), 0.05),
+      at(h('p', 'screen-sub', 'Tap to add. We bring it to your table.'), 0.1),
+      at(list, 0.14),
+      at(money('Total', usd(cartTotal(c))), 0.42)
+    ];
+    if (cartCount(c)) body.push(at(h('p', 'screen-total-sats', sats(cartTotal(c))), 0.46));
+    body.push(
+      at(btn('screen-btn screen-btn-lime screen-btn-wide', cartCount(c) ? 'Order to table 21' : 'Pick something first', 'order', { needs: 'cart' }), 0.5)
+    );
+    if (cartCount(c)) body.push(at(btn('screen-btn screen-btn-wide', 'Start over', 'clear'), 0.54));
+    body.push(at(code('each row: button → action ', 'add { "item": … }'), 0.6));
+    return { surface: 'table_21', body };
   }
 
   /* gym: the membership, as the server sees it */
@@ -360,8 +413,8 @@
       surface: 'membership',
       body: [
         h('p', 'screen-note', 'server → client · element'),
-        at(h('p', 'screen-title', 'Iron Club Gym'), 0.05),
-        at(rowLine('Active · paid until 12 Oct'), 0.14),
+        at(h('p', 'screen-title', 'Riverside Gym'), 0.05),
+        at(rowLine('Active · paid until 12 Dec'), 0.14),
         at(h('p', 'screen-sub', UNUSED_DAYS + ' days left this month.'), 0.2),
         at(money('Next month', usd(MONTH)), 0.26),
         at(btn('screen-btn screen-btn-lime screen-btn-wide', 'Pay for next month', 'renew'), 0.34),
@@ -371,7 +424,10 @@
   }
 
   /* ------------------------------------------------------------------ *
-   * the five flows
+   * the four flows, one per code in the picture
+   *
+   * `box` is where the code sits in scene.png, in image pixels:
+   * [left, top, right, bottom]. `uri` is what the code says.
    *
    * A stage is what the client is showing, plus what the server does
    * about a tap. `act` is the server's answer: true moves on, a number
@@ -380,26 +436,26 @@
    * re-reads the choices that were made in it.
    * ------------------------------------------------------------------ */
 
-  const CASE_LIST = [
-    {
-      id: 'till',
-      name: 'Pay at the till',
-      blurb: 'Scan the code on a till. An invoice comes straight back, with no page at all.',
+  const FLOWS = {
+    market: {
+      label: 'the laptop',
+      box: [440, 235, 497, 291],
+      uri: 'cop://9e2a…41d7#order=2817',
       stages: [
         () => ({
-          screen: () => payScreen({ to: 'Corner Café', amount: usd(3.4), memo: '1 × flat white' }),
+          screen: () => payScreen({ to: 'Linen & Co.', amount: usd(CART), memo: 'Order #2817 · shirt, tote bag, sunglasses' }),
           act: (key) => key === 'pay'
         }),
         () => ({
-          screen: () => payScreen({ to: 'Corner Café', amount: usd(3.4), memo: '1 × flat white', done: true })
+          screen: () => payScreen({ to: 'Linen & Co.', amount: usd(CART), memo: 'Order #2817 · shirt, tote bag, sunglasses', done: true })
         })
       ]
     },
 
-    {
-      id: 'tip',
-      name: 'Tip the band',
-      blurb: 'A form with an amount, a name and a message. The invoice is for whatever you typed.',
+    tip: {
+      label: 'the tip sign',
+      box: [882, 158, 915, 189],
+      uri: 'cop://c07f…be15',
       stages: [
         (c) => ({
           screen: () => tipForm(c),
@@ -407,137 +463,110 @@
             key.startsWith('amount:') ? { set: { amount: key.slice(7) } } : key === 'submit' && given(c) > 0
         }),
         (c) => ({
-          screen: () => payScreen({ to: 'The Lanterns', amount: usd(given(c)), memo: c.name ? 'Tip from ' + c.name : 'Tip' }),
+          screen: () => payScreen({ to: 'Leo', amount: usd(given(c)), memo: c.name ? 'Tip from ' + c.name : 'Tip' }),
           act: (key) => key === 'pay'
         }),
         (c) => ({
-          screen: () => payScreen({ to: 'The Lanterns', amount: usd(given(c)), memo: c.name ? 'Tip from ' + c.name : 'Tip', done: true })
+          screen: () => payScreen({ to: 'Leo', amount: usd(given(c)), memo: c.name ? 'Tip from ' + c.name : 'Tip', done: true })
         })
       ]
     },
 
-    {
-      id: 'table',
-      name: 'Pay the table',
-      blurb: 'The bill for table 12 at a ramen bar, a tip you choose, and the total in sats.',
+    table: {
+      label: 'table 21',
+      box: [505, 584, 596, 638],
+      uri: 'cop://5f1c…0a9b#table=21',
       stages: [
         (c) => ({
-          screen: () => bill(c),
-          act: (key) => (key.startsWith('tip:') ? { set: { tip: key.slice(4) } } : key === 'pay')
+          screen: () => cafeMenu(c),
+          act: (key) => {
+            if (key.startsWith('add:')) {
+              const id = key.slice(4);
+              return { set: { cart: { ...cart(c), [id]: (cart(c)[id] || 0) + 1 } } };
+            }
+            if (key === 'clear') return { set: { cart: {} } };
+            return key === 'order' && cartCount(c) > 0;
+          }
         }),
         (c) => ({
-          screen: () => payScreen({ to: 'Kōji Ramen', amount: sats(billTotal(c)), memo: 'Table 12 · ' + usd(billTotal(c)) + ' incl. tip' }),
+          screen: () => payScreen({ to: 'Terrace Café', amount: sats(cartTotal(c)), memo: 'Table 21 · ' + usd(cartTotal(c)) }),
           act: (key) => key === 'pay'
         }),
         (c) => ({
           screen: () =>
-            payScreen({ to: 'Kōji Ramen', amount: sats(billTotal(c)), memo: 'Table 12 · ' + usd(billTotal(c)) + ' incl. tip', done: true })
+            payScreen({
+              to: 'Terrace Café',
+              amount: sats(cartTotal(c)),
+              memo: 'Table 21 · ' + usd(cartTotal(c)),
+              note: 'On its way to table 21: ' + cartSummary(c) + '.',
+              done: true
+            })
         })
       ]
     },
 
-    {
-      id: 'pizza',
-      name: 'Pizza delivery',
-      blurb: 'A menu, toppings, an address field, and a pay button that is just a button.',
-      stages: [
-        () => ({
-          screen: () => menu(),
-          act: (key) => key.startsWith('pizza:') && { set: { pizza: key.slice(6) }, next: true }
-        }),
-        (c) => ({
-          screen: () => toppings(c),
-          act: (key) => key.startsWith('topping:') && { set: { topping: key.slice(8) }, next: true }
-        }),
-        (c) => ({
-          screen: () => checkout(c),
-          act: (key) => key === 'pay' && Boolean((c.address || '').trim())
-        }),
-        (c) => ({
-          screen: () => payScreen({ to: 'Luigi’s Pizza', amount: usd(total(c)), memo: summary(c) }),
-          act: (key) => key === 'pay'
-        }),
-        (c) => ({
-          screen: () => payScreen({ to: 'Luigi’s Pizza', amount: usd(total(c)), memo: summary(c), done: true })
-        })
-      ]
-    },
-
-    {
-      id: 'gym',
-      name: 'Gym membership',
-      blurb: 'Pay for next month, or cancel and get the unused days back.',
+    gym: {
+      label: 'the gym card',
+      box: [357, 597, 411, 635],
+      uri: 'cop://71b3…e8c0',
       stages: [
         /* 0 */ () => ({
           screen: () => membership(),
           act: (key) => (key === 'renew' ? true : key === 'cancel' ? 3 : false)
         }),
         /* 1 */ () => ({
-          screen: () => payScreen({ to: 'Iron Club Gym', amount: usd(MONTH), memo: 'Membership · 12 Oct – 12 Nov' }),
+          screen: () => payScreen({ to: 'Riverside Gym', amount: usd(MONTH), memo: 'Membership · 12 Dec – 12 Jan' }),
           act: (key) => key === 'pay'
         }),
         /* 2 */ () => ({
-          screen: () => payScreen({ to: 'Iron Club Gym', amount: usd(MONTH), memo: 'Membership · 12 Oct – 12 Nov', done: true })
+          screen: () => payScreen({ to: 'Riverside Gym', amount: usd(MONTH), memo: 'Membership · 12 Dec – 12 Jan', done: true })
         }),
         /* 3 */ () => ({
-          screen: () => receiveScreen({ from: 'Iron Club Gym', amount: usd(REFUND), memo: 'Refund · ' + UNUSED_DAYS + ' unused days' }),
+          screen: () => receiveScreen({ from: 'Riverside Gym', amount: usd(REFUND), memo: 'Refund · ' + UNUSED_DAYS + ' unused days' }),
           act: (key) => key === 'accept'
         }),
         /* 4 */ () => ({
-          screen: () => receiveScreen({ from: 'Iron Club Gym', amount: usd(REFUND), memo: 'Refund · ' + UNUSED_DAYS + ' unused days', done: true })
+          screen: () => receiveScreen({ from: 'Riverside Gym', amount: usd(REFUND), memo: 'Refund · ' + UNUSED_DAYS + ' unused days', done: true })
         })
       ]
     }
-  ];
+  };
 
   /* ------------------------------------------------------------------ *
    * engine
    * ------------------------------------------------------------------ */
 
-  const state = { caseIndex: 0, stageIndex: 0, ctx: {}, timer: 0, busy: false, raf: 0, p: 1 };
+  /* flowId null is the wallet's home, with the camera up */
+  const state = { flowId: null, stageIndex: 0, ctx: {}, timer: 0, busy: false, raf: 0, p: 1 };
+  const camera = { x: null, y: null };
   let stage = null;
   let reveals = [];
 
-  const flow = () => CASE_LIST[state.caseIndex];
-  const totalStages = () => flow().stages.length;
-  const reset = () => {
+  const flow = () => FLOWS[state.flowId];
+
+  function scan(id) {
+    state.flowId = id;
     state.ctx = {};
-  };
+    enter(0);
+  }
 
-  /* ---- case menu ---- */
-
-  const caseButtons = CASE_LIST.map((entry, index) => {
-    const button = h('button', 'demo-case');
-    button.type = 'button';
-    button.append(
-      h('span', 'demo-case-num', String(index + 1).padStart(2, '0')),
-      h('span', 'demo-case-name', entry.name),
-      h('span', 'demo-case-blurb', entry.blurb)
-    );
-    button.addEventListener('click', () => {
-      if (state.caseIndex === index) return;
-      state.caseIndex = index;
-      reset();
-      enter(0);
-    });
-    ui.menu.append(button);
-    return button;
-  });
+  function close() {
+    state.flowId = null;
+    state.ctx = {};
+    enter(0);
+  }
 
   /* ---- what is ready to send ---- */
 
   const ready = (need) => {
-    if (need === 'address') return Boolean((state.ctx.address || '').trim());
     if (need === 'amount') return given(state.ctx) > 0;
+    if (need === 'cart') return cartCount(state.ctx) > 0;
     return true;
   };
 
   function refresh() {
     ui.screen.querySelectorAll('[data-needs]').forEach((node) => {
       node.disabled = !ready(node.dataset.needs);
-    });
-    ui.screen.querySelectorAll('[data-show]').forEach((node) => {
-      if (node.dataset.show === 'address') node.textContent = 'order.address → ' + JSON.stringify(state.ctx.address || '');
     });
   }
 
@@ -546,16 +575,19 @@
   function enter(index, { soft = false } = {}) {
     clearTimeout(state.timer);
     state.timer = 0;
-    state.stageIndex = Math.max(0, Math.min(totalStages() - 1, index));
-    stage = flow().stages[state.stageIndex](state.ctx);
 
-    caseButtons.forEach((button, i) => {
-      button.classList.toggle('is-current', i === state.caseIndex);
-      if (i === state.caseIndex) button.setAttribute('aria-current', 'true');
-      else button.removeAttribute('aria-current');
-    });
+    let scene;
+    if (flow()) {
+      state.stageIndex = Math.max(0, Math.min(flow().stages.length - 1, index));
+      stage = flow().stages[state.stageIndex](state.ctx);
+      scene = stage.screen();
+    } else {
+      stage = null;
+      scene = home();
+    }
 
-    const scene = stage.screen();
+    ui.codes.forEach((node) => node.classList.toggle('is-current', node.dataset.code === state.flowId));
+
     const status = h('div', 'demo-status');
     const icons = h('span', 'demo-status-icons');
     icons.setAttribute('aria-hidden', 'true');
@@ -567,7 +599,17 @@
     const screenEl = h('div', 'screen is-active' + (scene.pay ? ' screen-pay' : ''));
     scene.body.forEach((node) => screenEl.append(node));
     body.append(screenEl);
-    phone.append(status, body, h('div', 'demo-home'));
+
+    phone.append(status);
+    if (flow()) {
+      /* the wallet's own bar: which code it dialed, and a way out */
+      const bar = h('div', 'demo-bar');
+      const x = btn('demo-bar-close', '✕', 'close');
+      x.setAttribute('aria-label', 'Close');
+      bar.append(x, h('span', 'demo-bar-uri', flow().uri));
+      phone.append(bar);
+    }
+    phone.append(body, h('div', 'demo-home'));
 
     const device = h('div', 'demo-device');
     device.append(phone);
@@ -624,9 +666,12 @@
    *   a stage number            jump to that stage
    *   { set: {...} }            redraw this same stage with new state
    *   { set: {...}, next: true }  remember the choice, then move on
-   */
+   *
+   * `close` and `scan:` belong to the wallet, not to any server. */
 
   function act(key, node) {
+    if (key === 'close') return close();
+    if (key.startsWith('scan:')) return scan(key.slice(5));
     if (!stage || !stage.act || state.busy) return;
     const result = stage.act(key);
     if (result === false || result == null) return;
