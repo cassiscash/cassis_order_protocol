@@ -2,19 +2,6 @@
 
 {% block content %}
 {% set spec_url = get_url(path='spec/') %}
-{# ======================= UNDER DEVELOPMENT STRIP ======================= #}
-<div class="relative overflow-hidden border-b-[3px] border-ink bg-copdeep text-white" role="status">
-  <div class="mx-auto flex max-w-[1400px] flex-wrap items-center gap-x-4 gap-y-1.5 px-6 py-2.5 md:px-12">
-    <span class="inline-flex items-center gap-2.5 font-space text-[0.72rem] font-extrabold tracking-[0.14em] uppercase">
-      <span class="inline-block h-2.5 w-2.5 animate-blink bg-amber" aria-hidden="true"></span>
-      {{ config.extra.status }}
-    </span>
-    <span class="font-fira text-[0.72rem] text-white/90">
-      Spec {{ config.extra.spec_version }} is a draft and may change.
-    </span>
-  </div>
-</div>
-
 {# ============================== HERO ============================== #}
 <section class="relative isolate overflow-hidden border-b-[3px] border-ink">
   <div aria-hidden="true" class="absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(20,25,28,0.07)_1px,transparent_1px),linear-gradient(to_bottom,rgba(20,25,28,0.07)_1px,transparent_1px)] bg-[length:44px_44px]"></div>
@@ -23,19 +10,14 @@
 
   <div class="mx-auto grid max-w-[1400px] items-center gap-12 px-6 py-16 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-24">
     <div class="flex min-w-0 flex-col items-start">
-      <div class="mb-6 flex flex-wrap items-center gap-2 font-fira text-[0.65rem] font-bold tracking-[0.1em] uppercase">
-        <span class="border-2 border-ink bg-card px-2.5 py-1 text-ink2">spec {{ config.extra.spec_version }} draft</span>
-        <span class="border-2 border-ink bg-card px-2.5 py-1 text-ink2">iroh</span>
-        <span class="border-2 border-ink bg-card px-2.5 py-1 text-ink2">hypereffect</span>
-        <span class="border-2 border-ink bg-violet px-2.5 py-1 text-white">server &harr; client</span>
-      </div>
-      <h1 class="m-0 max-w-[760px] font-outfit text-[clamp(2.6rem,7vw,6.2rem)] leading-[0.85] font-black tracking-[-0.05em] uppercase">
-        Pay for anything in the real world without leaving your wallet
+      <h1 class="m-0 max-w-[760px] font-outfit text-[clamp(2.1rem,4.6vw,4rem)] leading-[0.92] font-black tracking-[-0.05em] uppercase">
+        Supercharged Bitcoin payment experiences
       </h1>
       <p class="mt-7 max-w-[620px] text-lg leading-[1.7] text-ink2">
         Scan a QR code and the merchant's order page opens inside your wallet, drawn with the
         wallet's own buttons, lists and forms. Pick what you want, then pay on the wallet's own
-        payment screen. The merchant needs no website, and the wallet needs no browser.
+        payment screen. The merchant needs no website, and the wallet needs no browser. Simple
+        to implement by any wallet.
       </p>
       <div class="mt-9 flex flex-wrap gap-4">
         <a class="inline-flex items-center justify-center gap-2.5 border-[3px] border-ink bg-ink px-8 py-3.5 font-space text-sm font-bold tracking-[0.08em] uppercase text-white no-underline shadow-s transition-[transform,box-shadow] duration-150 hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[1px_1px_0_#14191c]" href="{{ spec_url }}">
@@ -46,36 +28,18 @@
       </div>
     </div>
 
-    {# ---------------------- WHO IS WHO CARD ---------------------- #}
-    <div class="border-[3px] border-ink bg-dark shadow-l">
-      <div class="flex items-center gap-2 border-b-2 border-ink bg-darkcard px-4 py-2.5" aria-hidden="true">
-        <span class="h-3 w-3 rounded-full border-[1.5px] border-ink" style="background: #ff5f56;"></span>
-        <span class="h-3 w-3 rounded-full border-[1.5px] border-ink" style="background: #ffbd2e;"></span>
-        <span class="h-3 w-3 rounded-full border-[1.5px] border-ink" style="background: #27c93f;"></span>
-        <span class="ml-2 font-fira text-[0.65rem] tracking-[0.1em] uppercase text-white/65">who is who</span>
-      </div>
-      <div class="flex flex-col gap-5 px-4 py-5 sm:px-6">
-        <div class="grid grid-cols-[auto_1fr] items-start gap-3.5">
-          <span class="mt-0.5 inline-block h-2.5 w-2.5 shrink-0" style="background: var(--color-copbright);" aria-hidden="true"></span>
-          <div>
-            <h2 class="m-0 font-space text-[0.78rem] font-extrabold tracking-[0.12em] uppercase text-white">Server</h2>
-            <p class="mt-1 text-[0.85rem] leading-[1.65] text-white/65">The merchant's side: a shop, a restaurant, a vending machine, anyone hosting an order page. It can run on an always-on machine or on the merchant's own phone. It describes the page, reacts to what the customer does, and sends invoices.</p>
-          </div>
-        </div>
-        <div class="grid grid-cols-[auto_1fr] items-start gap-3.5">
-          <span class="mt-0.5 inline-block h-2.5 w-2.5 shrink-0" style="background: var(--color-coral);" aria-hidden="true"></span>
-          <div>
-            <h2 class="m-0 font-space text-[0.78rem] font-extrabold tracking-[0.12em] uppercase text-white">Client</h2>
-            <p class="mt-1 text-[0.85rem] leading-[1.65] text-white/65">The customer's wallet, on their phone. It scans the QR code, opens the connection, draws the page with native components, and shows its own payment screen when an invoice arrives.</p>
-          </div>
-        </div>
-        <div class="grid grid-cols-[auto_1fr] items-start gap-3.5">
-          <span class="mt-0.5 inline-block h-2.5 w-2.5 shrink-0" style="background: var(--color-lime);" aria-hidden="true"></span>
-          <div>
-            <h2 class="m-0 font-space text-[0.78rem] font-extrabold tracking-[0.12em] uppercase text-white">Connection</h2>
-            <p class="mt-1 text-[0.85rem] leading-[1.65] text-white/65">An iroh connection (<code class="font-fira text-[0.78rem] text-lime">cassis-order</code> ALPN) carrying one JSON message per line, both ways. The QR code holds the server's iroh key and, optionally, a relay to reach it through.</p>
-          </div>
-        </div>
+    {# ---------------- order pages being built, on screens of any shape ---------------- #}
+    <div class="build" data-build aria-hidden="true">
+      <div class="build-screen">
+        <span class="build-box"></span>
+        <span class="build-box"></span>
+        <span class="build-box"></span>
+        <span class="build-box"></span>
+        <span class="build-box"></span>
+        <span class="build-box"></span>
+        <span class="build-box build-pay">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6v12" /><path d="M6.5 6H13a3 3 0 0 1 0 6H8" /><path d="M8 12h6a3 3 0 0 1 0 6H6.5" /><path d="M9.5 3.5V6M12.5 3.5V6M9.5 18v2.5M12.5 18v2.5" /></svg>
+        </span>
       </div>
     </div>
   </div>
@@ -83,42 +47,42 @@
 
 {# ========================== HOW IT WORKS ========================== #}
 <section class="scroll-mt-16 border-b-[3px] border-ink bg-card" id="how" aria-labelledby="how-title">
-  <div class="mx-auto max-w-[1400px] px-6 pt-12 md:px-12">
+  <div class="mx-auto max-w-[1400px] px-6 py-12 md:px-12">
     <div class="flex items-center gap-3">
       <span class="inline-block h-3 w-3" style="background: var(--color-violet);" aria-hidden="true"></span>
       <h2 class="m-0 font-fira text-[0.7rem] font-bold tracking-[0.18em] uppercase text-ink2" id="how-title">How it works</h2>
     </div>
+    <ol class="m-0 mt-8 grid list-none gap-x-10 gap-y-8 p-0 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-8">
+      <li class="flex items-start gap-4">
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink font-fira text-[0.8rem] font-bold text-white" style="background: var(--color-cop);" aria-hidden="true">01</span>
+        <div>
+          <h3 class="m-0 font-space text-[0.85rem] font-extrabold tracking-[0.06em] uppercase">Scan</h3>
+          <p class="mt-1.5 text-[0.82rem] leading-[1.65] text-ink2">The QR code is a <code class="font-fira text-[0.76rem]">cop://</code> URI: the server's iroh key, optionally a relay, and whatever parameters the merchant wants to pass, like a table number or a POS terminal.</p>
+        </div>
+      </li>
+      <li class="flex items-start gap-4">
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink font-fira text-[0.8rem] font-bold text-white" style="background: var(--color-coral);" aria-hidden="true">02</span>
+        <div>
+          <h3 class="m-0 font-space text-[0.85rem] font-extrabold tracking-[0.06em] uppercase">Connect</h3>
+          <p class="mt-1.5 text-[0.82rem] leading-[1.65] text-ink2">The wallet dials the server and sends those parameters along with a random <code class="font-fira text-[0.76rem]">session</code> string it just generated, so it can find this order again later.</p>
+        </div>
+      </li>
+      <li class="flex items-start gap-4">
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink font-fira text-[0.8rem] font-bold text-ink" style="background: var(--color-amber);" aria-hidden="true">03</span>
+        <div>
+          <h3 class="m-0 font-space text-[0.85rem] font-extrabold tracking-[0.06em] uppercase">Order</h3>
+          <p class="mt-1.5 text-[0.82rem] leading-[1.65] text-ink2">The server sends the page as hypereffect elements and signals, and the wallet draws them natively. Taps go back as <code class="font-fira text-[0.76rem]">action</code> messages, and the server can update the page as necessary.</p>
+        </div>
+      </li>
+      <li class="flex items-start gap-4">
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink font-fira text-[0.8rem] font-bold text-ink" style="background: var(--color-lime);" aria-hidden="true">04</span>
+        <div>
+          <h3 class="m-0 font-space text-[0.85rem] font-extrabold tracking-[0.06em] uppercase">Pay</h3>
+          <p class="mt-1.5 text-[0.82rem] leading-[1.65] text-ink2">At any moment (commonly after the user has made their choice and clicked to pay) the server sends an invoice and the wallet shows its native payment screen.</p>
+        </div>
+      </li>
+    </ol>
   </div>
-  <ol class="m-0 grid list-none p-0 sm:grid-cols-2 lg:grid-cols-4">
-    <li class="flex items-start gap-4 px-6 py-8 lg:px-7">
-      <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink font-fira text-[0.8rem] font-bold text-white" style="background: var(--color-cop);" aria-hidden="true">01</span>
-      <div>
-        <h3 class="m-0 font-space text-[0.85rem] font-extrabold tracking-[0.06em] uppercase">Scan</h3>
-        <p class="mt-1.5 text-[0.82rem] leading-[1.65] text-ink2">The QR code is a <code class="font-fira text-[0.76rem]">cop://</code> URI: the server's iroh key, optionally a relay, and whatever parameters the merchant wants to pass, like a table number or a POS terminal.</p>
-      </div>
-    </li>
-    <li class="flex items-start gap-4 px-6 py-8 lg:px-7">
-      <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink font-fira text-[0.8rem] font-bold text-white" style="background: var(--color-coral);" aria-hidden="true">02</span>
-      <div>
-        <h3 class="m-0 font-space text-[0.85rem] font-extrabold tracking-[0.06em] uppercase">Connect</h3>
-        <p class="mt-1.5 text-[0.82rem] leading-[1.65] text-ink2">The wallet dials the server and sends those parameters along with a random <code class="font-fira text-[0.76rem]">session</code> string it just generated, so it can find this order again later.</p>
-      </div>
-    </li>
-    <li class="flex items-start gap-4 px-6 py-8 lg:px-7">
-      <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink font-fira text-[0.8rem] font-bold text-ink" style="background: var(--color-amber);" aria-hidden="true">03</span>
-      <div>
-        <h3 class="m-0 font-space text-[0.85rem] font-extrabold tracking-[0.06em] uppercase">Order</h3>
-        <p class="mt-1.5 text-[0.82rem] leading-[1.65] text-ink2">The server sends the page as hypereffect elements and signals, and the wallet draws them natively. Taps go back as <code class="font-fira text-[0.76rem]">action</code> messages, and the server answers with an updated page.</p>
-      </div>
-    </li>
-    <li class="flex items-start gap-4 px-6 py-8 lg:px-7">
-      <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink font-fira text-[0.8rem] font-bold text-ink" style="background: var(--color-lime);" aria-hidden="true">04</span>
-      <div>
-        <h3 class="m-0 font-space text-[0.85rem] font-extrabold tracking-[0.06em] uppercase">Pay</h3>
-        <p class="mt-1.5 text-[0.82rem] leading-[1.65] text-ink2">The server sends an invoice and the wallet shows its own payment screen. To give money back, the server sends an invoice request instead.</p>
-      </div>
-    </li>
-  </ol>
 </section>
 
 {# ============================== USES ============================== #}
@@ -132,7 +96,7 @@
       <h2 class="m-0 font-outfit text-[clamp(2.1rem,4.5vw,3.6rem)] leading-[0.95] font-black tracking-[-0.04em] uppercase">Commerce, <span class="text-cop">inside the wallet</span></h2>
       <p class="mt-5 max-w-[760px] text-base leading-[1.8] text-ink2">
         Anything a merchant can describe with text, buttons, lists and form fields can be an order page.
-        A few of the shapes it takes:
+        A few of the use cases:
       </p>
     </div>
   </div>
@@ -174,7 +138,7 @@
       <span class="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink text-white" style="background: var(--color-cop);">
         <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 8h6" /><path d="M9 12h6" /><path d="M12 17v2" /></svg>
       </span>
-      <h3 class="m-0 font-space text-[0.9rem] font-extrabold tracking-[0.05em] uppercase">Unattended machines</h3>
+      <h3 class="m-0 font-space text-[0.9rem] font-extrabold tracking-[0.05em] uppercase">Unattended machines and offline experiences</h3>
       <p class="m-0 text-[0.85rem] leading-[1.7] text-ink2">A vending machine or kiosk displays a QR code while the server runs elsewhere.</p>
     </article>
 
@@ -195,35 +159,36 @@
         <p class="mt-6 max-w-[600px] text-base leading-[1.8] text-white/65">
           The wallet draws every order page with its own native components, so it looks and behaves like
           the rest of the wallet. The merchant needs no web server, no domain name and no certificate:
-          an iroh key is the address, and it works from a phone.
+          an iroh key is the address, and it works from anywhere.
         </p>
       </div>
       <div class="flex flex-col gap-6">
         <div class="grid grid-cols-[auto_1fr] items-start gap-4">
-          <span class="flex h-6 w-6 shrink-0 items-center justify-center border-2 border-ink text-ink" style="background: var(--color-lime);">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
-          </span>
+          <span class="mt-0.5 inline-block h-4 w-4 shrink-0 border-2 border-ink" style="background: var(--color-copbright);" aria-hidden="true"></span>
           <div>
-            <h4 class="m-0 font-space text-[0.95rem] font-extrabold tracking-[0.04em] uppercase">A small set of components</h4>
-            <p class="mt-1 text-[0.85rem] leading-[1.7] text-white/60">The page is <a class="underline decoration-2 underline-offset-2 hover:text-lime" href="https://hypereffect.dev">hypereffect</a>: text, buttons, text fields, checkboxes, lists, rows, columns, images and a few more. Small enough for any wallet to build with its own UI toolkit.</p>
+            <h4 class="m-0 font-space text-[0.95rem] font-extrabold tracking-[0.04em] uppercase">The server is the merchant</h4>
+            <p class="mt-1 text-[0.85rem] leading-[1.7] text-white/60">A shop, a restaurant, a vending machine, running on an always-on machine or the merchant's own phone. It describes the page, reacts to what the customer does, and sends invoices.</p>
           </div>
         </div>
         <div class="grid grid-cols-[auto_1fr] items-start gap-4">
-          <span class="flex h-6 w-6 shrink-0 items-center justify-center border-2 border-ink text-ink" style="background: var(--color-amber);">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
-          </span>
+          <span class="mt-0.5 inline-block h-4 w-4 shrink-0 border-2 border-ink" style="background: var(--color-coral);" aria-hidden="true"></span>
+          <div>
+            <h4 class="m-0 font-space text-[0.95rem] font-extrabold tracking-[0.04em] uppercase">The client is the wallet</h4>
+            <p class="mt-1 text-[0.85rem] leading-[1.7] text-white/60">It draws the page with its own UI toolkit. The page is <a class="underline decoration-2 underline-offset-2 hover:text-lime" href="https://hypereffect.dev">hypereffect</a>: text, buttons, text fields, lists, rows, images and a few more, small enough for any wallet to support.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-[auto_1fr] items-start gap-4">
+          <span class="mt-0.5 inline-block h-4 w-4 shrink-0 border-2 border-ink" style="background: var(--color-lime);" aria-hidden="true"></span>
+          <div>
+            <h4 class="m-0 font-space text-[0.95rem] font-extrabold tracking-[0.04em] uppercase">The connection is iroh</h4>
+            <p class="mt-1 text-[0.85rem] leading-[1.7] text-white/60">The QR code holds the server's iroh key. The wallet dials it (<code class="font-fira text-[0.78rem] text-lime">cassis-order</code> ALPN) and both sides exchange messages. Custom relays and Tor are supported</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-[auto_1fr] items-start gap-4">
+          <span class="mt-0.5 inline-block h-4 w-4 shrink-0 border-2 border-ink" style="background: var(--color-amber);" aria-hidden="true"></span>
           <div>
             <h4 class="m-0 font-space text-[0.95rem] font-extrabold tracking-[0.04em] uppercase">The payment screen is the wallet's</h4>
             <p class="mt-1 text-[0.85rem] leading-[1.7] text-white/60">The server can draw whatever page it likes, but not the payment screen. What you pay, and to whom, comes from the invoice, and your wallet shows it.</p>
-          </div>
-        </div>
-        <div class="grid grid-cols-[auto_1fr] items-start gap-4">
-          <span class="flex h-6 w-6 shrink-0 items-center justify-center border-2 border-ink text-ink" style="background: var(--color-coral);">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
-          </span>
-          <div>
-            <h4 class="m-0 font-space text-[0.95rem] font-extrabold tracking-[0.04em] uppercase">Bring your own relay</h4>
-            <p class="mt-1 text-[0.85rem] leading-[1.7] text-white/60">A merchant can name their own iroh relay in the QR code, including one that is only reachable over Tor.</p>
           </div>
         </div>
       </div>

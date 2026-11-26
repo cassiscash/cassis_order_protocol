@@ -710,3 +710,155 @@
 
   enter(0);
 })();
+
+/* The hero: order pages being put together on screens of different shapes.
+ *
+ * Only boxes and a frame. The frame takes a new shape, the boxes arrange
+ * themselves inside it one by one, and the last of them becomes the pay
+ * button and gets pressed.
+ */
+(() => {
+  'use strict';
+
+  const root = document.querySelector('[data-build]');
+  if (!root) return;
+
+  const screen = root.querySelector('.build-screen');
+  const boxes = Array.from(root.querySelectorAll('.build-box'));
+  const pay = root.querySelector('.build-pay');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const COLORS = ['cop', 'coral', 'amber', 'violet', 'copbright', 'alt'];
+
+  /* aspect is width / height; each rect is [left, top, width, height] in
+     percent of the frame, and the last one is always the pay button */
+  const LAYOUTS = [
+    {
+      aspect: 0.52,
+      radius: 26,
+      colors: [0, 1, 5, 5, 2, 3],
+      rects: [[7, 5, 86, 8], [7, 16, 86, 26], [7, 46, 86, 9], [7, 58, 86, 9], [7, 70, 41, 9], [52, 70, 41, 9], [7, 84, 86, 10]]
+    },
+    {
+      aspect: 1.38,
+      radius: 16,
+      colors: [3, 2, 4, 1, 5, 5],
+      rects: [[4, 6, 92, 11], [4, 22, 44, 72], [52, 22, 44, 16], [52, 42, 44, 16], [52, 62, 21, 12], [75, 62, 21, 12], [52, 79, 44, 15]]
+    },
+    {
+      aspect: 0.5,
+      radius: 28,
+      colors: [3, 0, 1, 2, 4, 5],
+      rects: [[7, 4, 86, 7], [7, 14, 86, 12], [7, 29, 86, 12], [7, 44, 86, 12], [7, 59, 86, 12], [7, 74, 86, 6], [7, 85, 86, 10]]
+    },
+    {
+      aspect: 2.1,
+      radius: 6,
+      colors: [1, 4, 2, 3, 0, 5],
+      rects: [[3, 8, 30, 84], [36, 8, 61, 16], [36, 30, 29, 28], [68, 30, 29, 28], [36, 64, 29, 28], [68, 64, 13, 28], [84, 64, 13, 28]]
+    },
+    {
+      aspect: 1,
+      radius: 20,
+      colors: [2, 0, 3, 1, 4, 5],
+      rects: [[8, 8, 84, 14], [8, 27, 40, 30], [52, 27, 40, 30], [8, 62, 26, 12], [37, 62, 26, 12], [66, 62, 26, 12], [8, 79, 84, 13]]
+    },
+    {
+      aspect: 1.65,
+      radius: 8,
+      colors: [5, 0, 1, 2, 4, 5],
+      rects: [[3, 5, 16, 90], [22, 5, 75, 22], [22, 32, 23, 33], [48, 32, 23, 33], [74, 32, 23, 33], [22, 70, 49, 25], [74, 77, 23, 18]]
+    },
+    {
+      aspect: 0.55,
+      radius: 24,
+      colors: [5, 1, 2, 3, 0, 5],
+      rects: [[7, 5, 40, 8], [7, 17, 41, 26], [52, 17, 41, 26], [7, 47, 41, 26], [52, 47, 41, 26], [7, 77, 86, 5], [7, 86, 86, 9]]
+    },
+    {
+      aspect: 0.76,
+      radius: 14,
+      colors: [4, 3, 0, 1, 2, 5],
+      rects: [[6, 4, 88, 12], [6, 20, 88, 30], [6, 54, 27, 16], [36.5, 54, 27, 16], [67, 54, 27, 16], [6, 74, 40, 18], [50, 74, 44, 18]]
+    },
+    {
+      aspect: 1.6,
+      radius: 10,
+      colors: [5, 1, 2, 3, 5, 4],
+      rects: [[4, 6, 56, 10], [4, 22, 56, 22], [4, 50, 56, 22], [4, 78, 56, 16], [64, 6, 32, 50], [64, 60, 32, 14], [64, 79, 32, 15]]
+    },
+    {
+      aspect: 0.66,
+      radius: 18,
+      colors: [0, 3, 2, 1, 4, 5],
+      rects: [[5, 4, 90, 8], [5, 16, 90, 36], [5, 56, 28, 18], [36, 56, 28, 18], [67, 56, 28, 18], [5, 78, 58, 15], [67, 78, 28, 15]]
+    }
+  ];
+
+  let current = 0;
+  let timers = [];
+  const later = (ms, fn) => timers.push(setTimeout(fn, ms));
+
+  /* the frame's size in pixels, fitted into the stage */
+  function fit(layout) {
+    const fill = 0.9;
+    const w = Math.min(root.clientWidth * fill, root.clientHeight * fill * layout.aspect);
+    screen.style.width = w + 'px';
+    screen.style.height = w / layout.aspect + 'px';
+    screen.style.borderRadius = layout.radius + 'px';
+  }
+
+  function place(layout) {
+    boxes.forEach((box, i) => {
+      const [left, top, width, height] = layout.rects[i];
+      Object.assign(box.style, { left: left + '%', top: top + '%', width: width + '%', height: height + '%' });
+      if (box !== pay) box.style.background = `var(--color-${COLORS[layout.colors[i]]})`;
+    });
+  }
+
+  function show(on) {
+    boxes.forEach((box, i) => {
+      box.style.transitionDelay = (on ? i * 110 : i * 35) + 'ms';
+      box.classList.toggle('is-in', on);
+    });
+  }
+
+  function build() {
+    const layout = LAYOUTS[current];
+    pay.classList.remove('is-ready', 'is-pressed');
+    show(false);
+    later(450, () => {
+      place(layout);
+      fit(layout);
+    });
+    later(1150, () => show(true));
+    later(2300, () => {
+      pay.style.transitionDelay = '0ms';
+      pay.classList.add('is-ready');
+    });
+    later(2900, () => pay.classList.add('is-pressed'));
+    later(5000, () => {
+      current = (current + 1) % LAYOUTS.length;
+      build();
+    });
+  }
+
+  if (reduceMotion) {
+    place(LAYOUTS[0]);
+    fit(LAYOUTS[0]);
+    show(true);
+    pay.classList.add('is-ready');
+  } else {
+    build();
+  }
+
+  window.addEventListener('resize', () => fit(LAYOUTS[current]));
+
+  /* nobody is looking: start over from a clean frame when they come back */
+  document.addEventListener('visibilitychange', () => {
+    if (reduceMotion) return;
+    timers.forEach(clearTimeout);
+    timers = [];
+    if (!document.hidden) build();
+  });
+})();

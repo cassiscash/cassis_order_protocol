@@ -13,6 +13,5 @@ theme = "github-dark"
 
 [extra]
 github_url = "https://github.com/cassiscash/cassis_order_protocol"
-tagline = "Order pages that open inside your wallet"
-status = "Under development"
+tagline = "Order pages that open inside Bitcoin wallets."
 spec_version = "v1.0"
