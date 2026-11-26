@@ -29,7 +29,8 @@
       <nav class="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-6 py-3.5 md:px-12" aria-label="Primary">
         <a href="{{ get_url(path='/') }}" class="flex items-center gap-2.5 font-space text-xl font-extrabold tracking-[0.06em] uppercase no-underline text-ink md:text-2xl">
           <img src="{{ get_url(path='logo.svg') }}" alt="Cassis Order Protocol logo" width="34" height="34" />
-          <span>COP<span class="text-cop">.</span></span>
+          <span class="lg:hidden">COP<span class="text-cop">.</span></span>
+          <span class="hidden lg:inline">Cassis Order Protocol</span>
         </a>
         <ul class="m-0 hidden list-none items-center gap-8 p-0 md:flex">
           <li><a class="font-space text-[0.82rem] font-semibold tracking-[0.1em] uppercase no-underline text-ink2 hover:text-ink hover:underline" href="{{ get_url(path='/') }}#how">How it works</a></li>
