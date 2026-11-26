@@ -101,7 +101,7 @@ action {"name":"pay","signals":{"order":{"address":"221B Baker St, London NW1 6X
 The server validates the address and sends a Cassis `invoice`:
 
 ```
-invoice {"invoice":{"payment_hash":"3f9a…e21c","amount_msat":10750000,"expires_at":1793875200,…},"memo":"Pepperoni + chili, to 221B Baker St"}
+invoice {"invoice":{"payment_hash":"3f9a…e21c","amount_msat":10750000,"expires_at":1793875200,…}}
 ```
 
 When the client receives `invoice`, it opens its own native payment prompt showing the invoice's amount, payee, and expiry. Settlement happens over the invoice's payment network outside of COP. Once paid, the server can stream a confirmation page.
@@ -116,7 +116,7 @@ The client scans a QR code at a till (`#till=2`). The server immediately sends m
 
 ```
 metadata {"name":"Luigi's Pizza","description":"Till 2"}
-invoice {"invoice":{"payment_hash":"b207…41d9","amount_msat":3500000,"expires_at":1793871900,…},"memo":"1 × flat white"}
+invoice {"invoice":{"payment_hash":"b207…41d9","amount_msat":3500000,"expires_at":1793871900,…}}
 ```
 
 #### Refunds and payouts
@@ -125,10 +125,10 @@ To send money to the client (refunds, cashback, withdrawals), the server sends `
 
 ```
 metadata {"name":"Luigi's Pizza","description":"Refund","mode":"single_use"}
-invoicerequest {"amount":24000,"networks":["liquid","cashu::mint.example.com"],"memo":"Refund for unused days"}
+invoicerequest {"amount":24000,"description":"Refund for unused days"}
 ```
 
-If the user accepts, the client generates an invoice on one of the offered networks and replies:
+If the user accepts, the client generates an invoice and replies:
 
 ```
 invoice {"invoice":{"payment_hash":"5c04…9a7e","amount_msat":24000000,"expires_at":1793872800,…}}
@@ -257,14 +257,13 @@ metadata {"name":"Luigi's Pizza","description":"Refund for order 2f8c","mode":"s
 Asks the client to pay a Cassis invoice.
 
 - `invoice` (object, required): The Cassis invoice JSON object.
-- `memo` (string, optional): A short note to display alongside the payment. Amount and payee must always be read from `invoice`, never from `memo` or page elements.
 
 ```
-invoice {"invoice":{"payment_hash":"3f9a…e21c","amount_msat":10750000,"expires_at":1793875200,…},"memo":"Pepperoni + chili"}
+invoice {"invoice":{"payment_hash":"3f9a…e21c","amount_msat":10750000,"expires_at":1793875200,…}}
 ```
 
 **Behavior:**
-- The client displays its native payment prompt.
+- The client displays its native payment prompt. Amount and payee must always be read from `invoice`, never from page elements.
 - If the user dismisses the prompt, the invoice remains attached to the session so the user can pay it later while the flow is open.
 - A new `invoice` message replaces any previous unpaid invoice in the session.
 
@@ -273,17 +272,15 @@ invoice {"invoice":{"payment_hash":"3f9a…e21c","amount_msat":10750000,"expires
 Offers money to the client and asks it to generate an invoice.
 
 - `amount` (integer, required): Amount offered in satoshis (the resulting Cassis invoice will be for `amount × 1000` msat).
-- `networks` (array of strings, required, non-empty): Cassis network IDs the server can pay on (e.g., `"liquid"`, `"cashu::mint.example.com"`).
-- `memo` (string, optional): Description to display to the user and include in the generated invoice.
-- `expiresIn` (integer, optional): Requested invoice expiry in seconds.
+- `description` (string, optional): Description to display to the user and include in the generated invoice.
 
 ```
-invoicerequest {"amount":24000,"networks":["liquid","cashu::mint.example.com"],"memo":"Refund for unused days","expiresIn":900}
+invoicerequest {"amount":24000,"description":"Refund for unused days"}
 ```
 
 **Behavior:**
-- If the client supports at least one listed network and the user accepts, the client generates a Cassis invoice and sends it in an `invoice` message.
-- If the user declines (or the client supports none of the networks), the client sends nothing. Servers must not block waiting for a reply.
+- If the user accepts, the client generates a Cassis invoice and sends it in an `invoice` message.
+- If the user declines, the client sends nothing. Servers must not block waiting for a reply.
 
 ### `invoice` (client → server)
 
