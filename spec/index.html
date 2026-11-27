@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <link rel="icon" type="image/svg+xml" href="https://cop.cassis.cash/logo.svg" /><meta name="description" content="The Cassis Order Protocol v1.0 draft: connection URIs, transport, sessions and the invoice messages." />
+    <meta property="og:site_name" content="Cassis Order Protocol" />
+    <meta property="og:title" content="Cassis Order Protocol | Order pages that open inside Bitcoin wallets." />
+    <meta property="og:description" content="The Cassis Order Protocol v1.0 draft: connection URIs, transport, sessions and the invoice messages." />
+    <meta property="og:url" content="https://cop.cassis.cash/spec/" />
+    <meta property="og:image" content="https://cop.cassis.cash/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:type" content="website" />
+    <title>Specification | Cassis Order Protocol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cop.cassis.cash/site.css" />
+  </head>
+  <body>
+    <a href="#main-content" class="fixed top-4 left-4 z-[100] -translate-y-[200%] border-[3px] border-ink bg-card px-5 py-3 font-bold no-underline shadow-s focus:translate-y-0">Skip to main content</a>
+
+    <header class="sticky top-0 z-50 border-b-[3px] border-ink bg-bg">
+      <nav class="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-6 py-3.5 md:px-12" aria-label="Primary">
+        <a href="https://cop.cassis.cash" class="flex items-center gap-2.5 font-space text-xl font-extrabold tracking-[0.06em] uppercase no-underline text-ink md:text-2xl">
+          <img src="https://cop.cassis.cash/logo.svg" alt="Cassis Order Protocol logo" width="34" height="34" />
+          <span class="lg:hidden">COP<span class="text-cop">.</span></span>
+          <span class="hidden lg:inline">Cassis Order Protocol</span>
+        </a>
+        <ul class="m-0 hidden list-none items-center gap-8 p-0 md:flex">
+          <li><a class="font-space text-[0.82rem] font-semibold tracking-[0.1em] uppercase no-underline text-ink2 hover:text-ink hover:underline" href="https://cop.cassis.cash#how">How it works</a></li>
+          <li><a class="font-space text-[0.82rem] font-semibold tracking-[0.1em] uppercase no-underline text-ink2 hover:text-ink hover:underline" href="https://cop.cassis.cash#uses">Uses</a></li>
+          <li><a class="font-space text-[0.82rem] font-semibold tracking-[0.1em] uppercase no-underline text-ink2 hover:text-ink hover:underline" href="https://cop.cassis.cash#examples">Examples</a></li>
+          <li><a class="font-space text-[0.82rem] font-semibold tracking-[0.1em] uppercase no-underline text-ink2 hover:text-ink hover:underline" href="https://cop.cassis.cash/spec">Spec</a></li>
+        </ul>
+        <div class="hidden gap-3.5 md:flex">
+          <a class="inline-flex items-center justify-center gap-2.5 border-[3px] border-ink bg-ink px-5 py-2.5 font-space text-xs font-bold tracking-[0.08em] uppercase text-white no-underline shadow-s transition-[transform,box-shadow] duration-150 hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[1px_1px_0_#14191c]" href="https://github.com/cassiscash/cassis_order_protocol" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+        <div class="relative flex items-center md:hidden">
+          <input type="checkbox" id="nav-toggle" aria-label="Toggle navigation" class="peer sr-only" />
+          <label class="block cursor-pointer border-[3px] border-ink bg-card p-1.5 shadow-s" for="nav-toggle" aria-label="Open menu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" class="block">
+              <path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" />
+            </svg>
+          </label>
+          <div class="absolute top-[calc(100%+0.9rem)] right-0 z-[60] hidden w-[min(320px,calc(100vw-3rem))] flex-col border-[3px] border-ink bg-card shadow-m peer-checked:flex">
+            <a class="border-b-2 border-ink px-6 py-4 font-space text-sm font-bold tracking-[0.1em] uppercase no-underline text-ink" href="https://cop.cassis.cash#how">How it works</a>
+            <a class="border-b-2 border-ink px-6 py-4 font-space text-sm font-bold tracking-[0.1em] uppercase no-underline text-ink" href="https://cop.cassis.cash#uses">Uses</a>
+            <a class="border-b-2 border-ink px-6 py-4 font-space text-sm font-bold tracking-[0.1em] uppercase no-underline text-ink" href="https://cop.cassis.cash#examples">Examples</a>
+            <a class="border-b-2 border-ink px-6 py-4 font-space text-sm font-bold tracking-[0.1em] uppercase no-underline text-ink" href="https://cop.cassis.cash/spec">Spec</a>
+            <a class="flex items-center gap-2.5 bg-ink px-6 py-4 font-space text-sm font-bold tracking-[0.1em] uppercase no-underline text-white" href="https://github.com/cassiscash/cassis_order_protocol" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main-content">
+      
+<section class="border-b-[3px] border-ink">
+  <div class="mx-auto max-w-[1400px] px-6 pt-14 pb-10 md:px-12 md:pt-20">
+    <p class="m-0 mb-4 font-fira text-[0.7rem] font-bold tracking-[0.18em] uppercase text-ink2">Specification &middot; v1.0 draft</p>
+    <h1 class="m-0 max-w-[900px] font-outfit text-[clamp(2.3rem,5.5vw,4.4rem)] leading-[0.92] font-black tracking-[-0.04em] uppercase">Cassis Order <span class="text-cop">Protocol</span></h1>
+    <p class="mt-5 mb-0 flex flex-wrap gap-x-6 gap-y-2 text-[0.88rem] text-ink2">
+      <a class="font-semibold text-copdeep underline" href="https://github.com/cassiscash/cassis_order_protocol/blob/master/spec.md" target="_blank" rel="noopener noreferrer">Source on GitHub</a>
+      <a class="font-semibold text-copdeep underline" href="https://github.com/cassiscash/cassis_order_protocol/issues" target="_blank" rel="noopener noreferrer">Report an issue</a>
+    </p>
+  </div>
+</section>
+
+<div class="mx-auto grid max-w-[1400px] gap-10 px-6 py-12 md:px-12 lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-16">
+  <nav class="hidden self-start lg:sticky lg:top-24 lg:block" aria-label="Contents">
+    <p class="m-0 mb-3 font-space text-[0.68rem] font-extrabold tracking-[0.18em] uppercase text-ink2">Contents</p>
+    <ul class="m-0 list-none border-l-[3px] border-ink p-0">
+      
+      <li><a class="block py-1 pl-4 text-[0.84rem] leading-snug text-ink2 no-underline hover:text-ink hover:underline" href="https://cop.cassis.cash/spec/#introduction">Introduction</a></li>
+      
+      <li><a class="block py-1 pl-4 text-[0.84rem] leading-snug text-ink2 no-underline hover:text-ink hover:underline" href="https://cop.cassis.cash/spec/#example-pizza-ordering-flow">Example: Pizza ordering flow</a></li>
+      
+      <li><a class="block py-1 pl-4 text-[0.84rem] leading-snug text-ink2 no-underline hover:text-ink hover:underline" href="https://cop.cassis.cash/spec/#connection-uri">Connection URI</a></li>
+      
+      <li><a class="block py-1 pl-4 text-[0.84rem] leading-snug text-ink2 no-underline hover:text-ink hover:underline" href="https://cop.cassis.cash/spec/#transport">Transport</a></li>
+      
+      <li><a class="block py-1 pl-4 text-[0.84rem] leading-snug text-ink2 no-underline hover:text-ink hover:underline" href="https://cop.cassis.cash/spec/#sessions">Sessions</a></li>
+      
+      <li><a class="block py-1 pl-4 text-[0.84rem] leading-snug text-ink2 no-underline hover:text-ink hover:underline" href="https://cop.cassis.cash/spec/#messages">Messages</a></li>
+      
+    </ul>
+  </nav>
+  <article class="prose min-w-0">
+    <p>A JSON-based protocol for streaming order pages from a merchant to a customer's wallet and settling payments.</p>
+<p><strong>Version:</strong> 1.0 · <strong>Status:</strong> Draft</p>
+<h2 id="introduction">Introduction</h2>
+<p>The Cassis Order Protocol (COP) builds on <strong><a rel="external" href="https://hypereffect.dev">hypereffect</a></strong>, a protocol for server-driven UI. A <strong>server</strong> (merchant) streams an order page as hypereffect messages to a <strong>client</strong> (customer's wallet). The client renders the page natively, sends user actions back, and settles payments through Cassis invoices.</p>
+<p>Framing, components, signals, expressions, and actions are standard hypereffect (where hypereffect says "renderer," this spec says <strong>client</strong>). COP adds:</p>
+<ul>
+<li><strong>Transport:</strong> An <strong>iroh</strong> connection initiated via a <a href="https://cop.cassis.cash/spec/#connection-uri">connection URI</a> (typically a QR code) or an <a href="https://cop.cassis.cash/spec/#web-addresses">HTTPS web address</a>.</li>
+<li><strong>Payment messages:</strong> <code>invoice</code> (requesting payment from the client) and <code>invoicerequest</code> (offering money to the client and asking it to generate an invoice).</li>
+<li><strong><code>hello</code> fields:</strong> <code>params</code> (from the connection URI), <code>session</code> (client-generated session ID), and <code>force_resume</code> (requiring the server to resume an existing session or fail).</li>
+<li><strong><code>close</code> reason:</strong> <code>session_not_found</code>, sent when a server cannot resume a requested session.</li>
+<li><strong><code>metadata</code> field:</strong> <code>mode</code>, indicating whether the connection URI can be reused (<code>single_use</code>).</li>
+</ul>
+<h3 id="roles">Roles</h3>
+<ul>
+<li><strong>Server (merchant):</strong> A shop, vending machine, or individual hosting an order endpoint on a server or phone. It defines the UI, processes actions, and sends invoices.</li>
+<li><strong>Client (payer):</strong> A wallet app. It always initiates the connection, renders the UI natively, forwards user actions, and displays its own trusted payment screen when an invoice arrives.</li>
+</ul>
+<hr />
+<h2 id="example-pizza-ordering-flow">Example: Pizza ordering flow</h2>
+<p>Every message is a single line: <code>&lt;tag&gt; &lt;json&gt;</code>, as defined by hypereffect.</p>
+<h3 id="1-client-connects-server-sends-menu">1. Client connects, server sends menu</h3>
+<p>The payer scans a QR code containing a connection URI:</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>cop://5f1c9d0a27e4b6c38d2f71a09e4b5c6d8a3f2e1b0c9d8e7f6a5b4c3d2e1f0a9b#name=Luigi%27s%20Pizza</span></span></code></pre>
+<p>The client connects to the iroh endpoint and sends <code>hello</code> with the URI parameters and a newly generated <code>session</code> token:</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>hello {&quot;params&quot;:{&quot;name&quot;:&quot;Luigi&#39;s Pizza&quot;},&quot;session&quot;:&quot;f1K9xQ2v8Tn4LmZp7Rb3wq&quot;}</span></span></code></pre>
+<p>The server replies with its metadata and menu elements:</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>metadata {&quot;name&quot;:&quot;Luigi&#39;s Pizza&quot;,&quot;description&quot;:&quot;Wood-fired pizza, Via Roma 12&quot;}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;title&quot;,&quot;type&quot;:&quot;text&quot;,&quot;variant&quot;:&quot;h1&quot;,&quot;text&quot;:&quot;Choose your pizza&quot;}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;menu&quot;,&quot;type&quot;:&quot;list&quot;}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;margherita&quot;,&quot;type&quot;:&quot;button&quot;,&quot;parent&quot;:&quot;menu&quot;,&quot;label&quot;:&quot;Margherita — $8.50&quot;,&quot;onPress&quot;:{&quot;action&quot;:&quot;selectPizza&quot;,&quot;payload&quot;:{&quot;pizza&quot;:&quot;margherita&quot;}}}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;pepperoni&quot;,&quot;type&quot;:&quot;button&quot;,&quot;parent&quot;:&quot;menu&quot;,&quot;label&quot;:&quot;Pepperoni — $10.00&quot;,&quot;onPress&quot;:{&quot;action&quot;:&quot;selectPizza&quot;,&quot;payload&quot;:{&quot;pizza&quot;:&quot;pepperoni&quot;}}}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;funghi&quot;,&quot;type&quot;:&quot;button&quot;,&quot;parent&quot;:&quot;menu&quot;,&quot;label&quot;:&quot;Funghi — $9.50&quot;,&quot;onPress&quot;:{&quot;action&quot;:&quot;selectPizza&quot;,&quot;payload&quot;:{&quot;pizza&quot;:&quot;funghi&quot;}}}</span></span></code></pre>
+<p>Action payloads carry item identifiers, never prices. The server calculates prices itself.</p>
+<h3 id="2-payer-picks-a-pizza">2. Payer picks a pizza</h3>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>action {&quot;name&quot;:&quot;selectPizza&quot;,&quot;payload&quot;:{&quot;pizza&quot;:&quot;pepperoni&quot;},&quot;signals&quot;:{}}</span></span></code></pre>
+<p>The server replaces the menu with topping options:</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>remove {&quot;id&quot;:&quot;menu&quot;}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;title&quot;,&quot;type&quot;:&quot;text&quot;,&quot;variant&quot;:&quot;h1&quot;,&quot;text&quot;:&quot;Your order&quot;}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;selected&quot;,&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;Pepperoni pizza — $10.00&quot;}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;toppings&quot;,&quot;type&quot;:&quot;card&quot;,&quot;title&quot;:&quot;Add an extra topping?&quot;}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;topping_row&quot;,&quot;type&quot;:&quot;row&quot;,&quot;parent&quot;:&quot;toppings&quot;}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;olives&quot;,&quot;type&quot;:&quot;button&quot;,&quot;parent&quot;:&quot;topping_row&quot;,&quot;label&quot;:&quot;Olives (+$1.00)&quot;,&quot;onPress&quot;:{&quot;action&quot;:&quot;selectTopping&quot;,&quot;payload&quot;:{&quot;topping&quot;:&quot;olives&quot;}}}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;chili&quot;,&quot;type&quot;:&quot;button&quot;,&quot;parent&quot;:&quot;topping_row&quot;,&quot;label&quot;:&quot;Chili (+$0.75)&quot;,&quot;onPress&quot;:{&quot;action&quot;:&quot;selectTopping&quot;,&quot;payload&quot;:{&quot;topping&quot;:&quot;chili&quot;}}}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;skip&quot;,&quot;type&quot;:&quot;button&quot;,&quot;parent&quot;:&quot;topping_row&quot;,&quot;variant&quot;:&quot;plain&quot;,&quot;label&quot;:&quot;No extra topping&quot;,&quot;onPress&quot;:{&quot;action&quot;:&quot;selectTopping&quot;,&quot;payload&quot;:{&quot;topping&quot;:null}}}</span></span></code></pre><h3 id="3-payer-picks-a-topping">3. Payer picks a topping</h3>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>action {&quot;name&quot;:&quot;selectTopping&quot;,&quot;payload&quot;:{&quot;topping&quot;:&quot;chili&quot;},&quot;signals&quot;:{}}</span></span></code></pre>
+<p>The server updates the page with an order summary, a signal-bound address input, and a pay button:</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>remove {&quot;id&quot;:&quot;toppings&quot;}</span></span>
+<span class="giallo-l"><span>signal {&quot;order&quot;:{&quot;address&quot;:&quot;&quot;}}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;title&quot;,&quot;type&quot;:&quot;text&quot;,&quot;variant&quot;:&quot;h1&quot;,&quot;text&quot;:&quot;Where should we deliver?&quot;}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;selected&quot;,&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;Pepperoni pizza + chili — $10.75&quot;}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;address&quot;,&quot;type&quot;:&quot;input&quot;,&quot;label&quot;:&quot;Delivery address&quot;,&quot;bind&quot;:&quot;order.address&quot;}</span></span>
+<span class="giallo-l"><span>element {&quot;id&quot;:&quot;pay&quot;,&quot;type&quot;:&quot;button&quot;,&quot;variant&quot;:&quot;primary&quot;,&quot;label&quot;:&quot;Pay $10.75&quot;,&quot;disabled&quot;:{&quot;cel&quot;:&quot;s.order.address == &#39;&#39;&quot;},&quot;onPress&quot;:{&quot;action&quot;:&quot;pay&quot;}}</span></span></code></pre>
+<p>Typing updates the client's local <code>order.address</code> signal without network traffic. The pay button is a standard hypereffect button; tapping it simply notifies the server.</p>
+<h3 id="4-payer-submits-order-and-pays">4. Payer submits order and pays</h3>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>action {&quot;name&quot;:&quot;pay&quot;,&quot;signals&quot;:{&quot;order&quot;:{&quot;address&quot;:&quot;221B Baker St, London NW1 6XE&quot;}}}</span></span></code></pre>
+<p>The server validates the address and sends a Cassis <code>invoice</code>:</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>invoice {&quot;invoice&quot;:{&quot;payment_hash&quot;:&quot;3f9a…e21c&quot;,&quot;amount_msat&quot;:10750000,&quot;expires_at&quot;:1793875200,…}}</span></span></code></pre>
+<p>When the client receives <code>invoice</code>, it opens its own native payment prompt showing the invoice's amount, payee, and expiry. Settlement happens over the invoice's payment network outside of COP. Once paid, the server can stream a confirmation page.</p>
+<h3 id="headless-flows-no-ui">Headless flows (no UI)</h3>
+<p>UI elements are optional. A flow can consist solely of payment messages.</p>
+<h4 id="paying-at-a-till">Paying at a till</h4>
+<p>The client scans a QR code at a till (<code>#till=2</code>). The server immediately sends metadata and an invoice:</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>metadata {&quot;name&quot;:&quot;Luigi&#39;s Pizza&quot;,&quot;description&quot;:&quot;Till 2&quot;}</span></span>
+<span class="giallo-l"><span>invoice {&quot;invoice&quot;:{&quot;payment_hash&quot;:&quot;b207…41d9&quot;,&quot;amount_msat&quot;:3500000,&quot;expires_at&quot;:1793871900,…}}</span></span></code></pre><h4 id="refunds-and-payouts">Refunds and payouts</h4>
+<p>To send money to the client (refunds, cashback, withdrawals), the server sends <code>invoicerequest</code>, typically marking the session <code>single_use</code>:</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>metadata {&quot;name&quot;:&quot;Luigi&#39;s Pizza&quot;,&quot;description&quot;:&quot;Refund&quot;,&quot;mode&quot;:&quot;single_use&quot;}</span></span>
+<span class="giallo-l"><span>invoicerequest {&quot;amount&quot;:24000,&quot;description&quot;:&quot;Refund for unused days&quot;}</span></span></code></pre>
+<p>If the user accepts, the client generates an invoice and replies:</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>invoice {&quot;invoice&quot;:{&quot;payment_hash&quot;:&quot;5c04…9a7e&quot;,&quot;amount_msat&quot;:24000000,&quot;expires_at&quot;:1793872800,…}}</span></span></code></pre><h4 id="resuming-an-order">Resuming an order</h4>
+<p>To check an order or receipt later, the client reconnects with the saved <code>session</code> token and <code>"force_resume":true</code>:</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>hello {&quot;params&quot;:{&quot;name&quot;:&quot;Luigi&#39;s Pizza&quot;},&quot;session&quot;:&quot;f1K9xQ2v8Tn4LmZp7Rb3wq&quot;,&quot;force_resume&quot;:true}</span></span></code></pre>
+<p>If the server recognizes the session, it streams the current state (unfinished order, receipt, or refund form). If not, it closes the connection:</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>close {&quot;reason&quot;:&quot;session_not_found&quot;}</span></span></code></pre>
+<hr />
+<h2 id="connection-uri">Connection URI</h2>
+<p>Servers publish endpoints as <code>cop://</code> URIs (usually in QR codes) or at <a href="https://cop.cassis.cash/spec/#web-addresses">HTTPS web addresses</a>.</p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>cop://&lt;endpoint-id&gt;[?_relay=&lt;relay-url&gt;][#&lt;parameters&gt;]</span></span></code></pre>
+<ul>
+<li><strong><code>&lt;endpoint-id&gt;</code> (required):</strong> The server's iroh endpoint ID (64-character hex Ed25519 public key). Case-insensitive (clients lowercase it). There is no path component.</li>
+<li><strong><code>_relay</code> (optional query parameter):</strong> Percent-encoded URL of a custom iroh relay to connect through instead of default relays. If the relay host is a <code>.onion</code> address, the client must connect via Tor. <code>_relay</code> is consumed by the client for routing and <strong>never sent</strong> in <code>hello</code>. Other query parameters are ignored.</li>
+<li><strong><code>&lt;parameters&gt;</code> (optional fragment):</strong> <code>&amp;</code>-separated <code>key=value</code> pairs (following <a rel="external" href="https://github.com/hypereffect/hyperb/blob/master/SPEC.md#18-session-parameters">hyperb session parameter rules</a>). Keys and values are percent-decoded UTF-8 strings; values may be empty. Missing <code>=</code>, empty keys, duplicate keys, or invalid UTF-8 make the URI invalid. Clients forward all fragment parameters in <code>hello</code> and ignore unknown ones. COP defines one parameter:
+<ul>
+<li><code>name</code>: Unverified display name shown while connecting, replaced once <code>metadata</code> arrives.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>cop://5f1c9d0a27e4b6c38d2f71a09e4b5c6d8a3f2e1b0c9d8e7f6a5b4c3d2e1f0a9b</span></span>
+<span class="giallo-l"><span>cop://5f1c9d0a27e4b6c38d2f71a09e4b5c6d8a3f2e1b0c9d8e7f6a5b4c3d2e1f0a9b#table=12&amp;name=Luigi%27s%20Pizza</span></span>
+<span class="giallo-l"><span>cop://5f1c9d0a27e4b6c38d2f71a09e4b5c6d8a3f2e1b0c9d8e7f6a5b4c3d2e1f0a9b?_relay=http%3A%2F%2Fexampleonionrelayaddressxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.onion#till=3</span></span></code></pre><h3 id="web-addresses">Web addresses</h3>
+<p>A web address (with or without a scheme, e.g., <code>example.com/order/123</code> or <code>https://example.com/order/123</code>) can be used in place of a <code>cop://</code> URI.</p>
+<ol>
+<li>The client normalizes the URL to <code>https://</code> (never fetching over plain HTTP) and performs a <code>GET</code> request, following only HTTPS redirects.</li>
+<li>It parses the HTML <code>&lt;head&gt;</code> for the first valid <code>&lt;link&gt;</code> with <code>rel="cassis-order"</code> and an absolute <code>cop://</code> <code>href</code>:<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="html"><span class="giallo-l"><span>&lt;</span><span style="color: #85E89D;">link</span><span style="color: #B392F0;"> rel</span><span>=</span><span style="color: #9ECBFF;">&quot;cassis-order&quot;</span><span style="color: #B392F0;"> href</span><span>=</span><span style="color: #9ECBFF;">&quot;cop://5f1c9d0a27e4b6c38d2f71a09e4b5c6d8a3f2e1b0c9d8e7f6a5b4c3d2e1f0a9b#table=12&quot;</span><span>&gt;</span></span></code></pre></li>
+<li>The client connects using the resolved <code>cop://</code> URI. Query and fragment parameters on the HTTPS URL itself are ignored.</li>
+</ol>
+<p>The client must not render the web page or execute its scripts, and should enforce strict fetch limits (timeout, response size, redirect count). The server's identity is determined solely by the iroh endpoint ID in the resolved <code>cop://</code> URI.</p>
+<hr />
+<h2 id="transport">Transport</h2>
+<p>COP runs over an <strong>iroh</strong> connection using the ALPN <code>cassis-order</code>.</p>
+<ol>
+<li>The client dials the server's endpoint ID (via <code>_relay</code> if specified) and opens a single bidirectional stream.</li>
+<li>Both sides exchange newline-delimited hypereffect messages on this stream.</li>
+<li>The client's first message must be <code>hello</code> with the following fields (servers ignore unknown fields):
+<ul>
+<li><code>session</code> (string, required): Client-generated session token with at least 128 bits of entropy. If missing or empty, the server may close the connection.</li>
+<li><code>params</code> (object of strings, optional): Decoded fragment parameters from the <code>cop://</code> URI. Omitted if there are none; non-string-object values are ignored.</li>
+<li><code>force_resume</code> (boolean, optional): If <code>true</code>, requires the server to resume the named session or close with <code>session_not_found</code>.</li>
+</ul>
+</li>
+<li>Either side ends the flow by closing the connection. A server may send a <code>close</code> message before disconnecting.</li>
+</ol>
+<p><strong>Example <code>hello</code> messages:</strong></p>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>hello {&quot;session&quot;:&quot;f1K9xQ2v8Tn4LmZp7Rb3wq&quot;}</span></span>
+<span class="giallo-l"><span>hello {&quot;params&quot;:{&quot;table&quot;:&quot;12&quot;,&quot;name&quot;:&quot;Luigi&#39;s Pizza&quot;},&quot;session&quot;:&quot;f1K9xQ2v8Tn4LmZp7Rb3wq&quot;}</span></span>
+<span class="giallo-l"><span>hello {&quot;params&quot;:{&quot;table&quot;:&quot;12&quot;,&quot;name&quot;:&quot;Luigi&#39;s Pizza&quot;},&quot;session&quot;:&quot;f1K9xQ2v8Tn4LmZp7Rb3wq&quot;,&quot;force_resume&quot;:true}</span></span></code></pre>
+<hr />
+<h2 id="sessions">Sessions</h2>
+<p>Every flow is identified by a <code>session</code> token generated by the client.</p>
+<ul>
+<li><strong>Session tokens are bearer tokens:</strong> Anyone with the token can reopen the flow. Clients must generate tokens with at least 128 bits of randomness.</li>
+<li><strong>Local history:</strong> Clients store the server's endpoint ID, relay, URI parameters, <code>session</code> token, and paid/issued invoices so the user can view history or reconnect later.</li>
+<li><strong>Connection URI reuse vs. session resume:</strong> Scanning a reusable QR code (like a table menu) generates a fresh <code>session</code> token for a new order. Reconnecting from history reuses the saved <code>session</code> token (and original <code>params</code>) with <code>"force_resume":true</code>.</li>
+<li><strong>Client endpoint IDs:</strong> Because iroh mutually authenticates connections, the server sees the client's iroh public key. Wallets choose their own key rotation policy (per-flow, per-merchant, or global). Servers may use the client endpoint ID as a hint or for rate-limiting, but must not rely on it as a stable account identity.</li>
+<li><strong>Retention policy:</strong> Servers decide how long to remember sessions. A coffee stand might keep no state at all, while a merchant offering receipts or refunds will store session state.</li>
+</ul>
+<h3 id="resuming-a-session">Resuming a session</h3>
+<ul>
+<li><strong>Without <code>"force_resume":true</code>:</strong> The server may either resume the session (if known) or start a fresh flow.</li>
+<li><strong>With <code>"force_resume":true</code>:</strong> The server must resume the session if known. If the session is unknown or expired, the server must not start a new flow; it must send <code>close</code> with reason <code>session_not_found</code> and disconnect:<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>close {&quot;reason&quot;:&quot;session_not_found&quot;}</span></span></code></pre>When a client receives <code>session_not_found</code>, it notifies the user that the server no longer has the order while keeping its own local receipt record.</li>
+</ul>
+<hr />
+<h2 id="messages">Messages</h2>
+<p>In addition to standard hypereffect messages (<code>hello</code>, <code>metadata</code>, <code>element</code>, <code>remove</code>, <code>signal</code>, <code>action</code>, <code>close</code>), COP defines:</p>
+<table><thead><tr><th>Tag</th><th>Direction</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>invoice</code></td><td>server → client</td><td>Request payment from the client</td></tr>
+<tr><td><code>invoicerequest</code></td><td>server → client</td><td>Offer money to the client and ask for an invoice</td></tr>
+<tr><td><code>invoice</code></td><td>client → server</td><td>Return a client-generated invoice in reply to <code>invoicerequest</code></td></tr>
+</tbody></table>
+<p>Invalid messages or messages missing required fields are ignored.</p>
+<h3 id="metadata-server-client"><code>metadata</code> (server → client)</h3>
+<p>Extends the hypereffect <code>metadata</code> message (<code>name</code>, <code>description</code>, <code>icon</code>) with one optional field:</p>
+<ul>
+<li><code>mode</code> (string, optional): Controls URI reuse. If omitted, the URI is reusable for new flows. Unknown values are ignored.
+<ul>
+<li><code>"single_use"</code>: The URI is intended for a single transaction (e.g., a refund voucher or single-checkout QR). The client should not start new flows from this URI. If scanned again, the client should resume its existing session for that URI or warn the user it was already used. Servers must still enforce single-use payouts on their end.</li>
+</ul>
+</li>
+</ul>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>metadata {&quot;name&quot;:&quot;Luigi&#39;s Pizza&quot;,&quot;description&quot;:&quot;Refund for order 2f8c&quot;,&quot;mode&quot;:&quot;single_use&quot;}</span></span></code></pre><h3 id="invoice-server-client"><code>invoice</code> (server → client)</h3>
+<p>Asks the client to pay a Cassis invoice.</p>
+<ul>
+<li><code>invoice</code> (object, required): The Cassis invoice JSON object.</li>
+</ul>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>invoice {&quot;invoice&quot;:{&quot;payment_hash&quot;:&quot;3f9a…e21c&quot;,&quot;amount_msat&quot;:10750000,&quot;expires_at&quot;:1793875200,…}}</span></span></code></pre>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>The client displays its native payment prompt. Amount and payee must always be read from <code>invoice</code>, never from page elements.</li>
+<li>If the user dismisses the prompt, the invoice remains attached to the session so the user can pay it later while the flow is open.</li>
+<li>A new <code>invoice</code> message replaces any previous unpaid invoice in the session.</li>
+</ul>
+<h3 id="invoicerequest-server-client"><code>invoicerequest</code> (server → client)</h3>
+<p>Offers money to the client and asks it to generate an invoice.</p>
+<ul>
+<li><code>amount</code> (integer, required): Amount offered in satoshis (the resulting Cassis invoice will be for <code>amount × 1000</code> msat).</li>
+<li><code>description</code> (string, optional): Description to display to the user and include in the generated invoice.</li>
+</ul>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>invoicerequest {&quot;amount&quot;:24000,&quot;description&quot;:&quot;Refund for unused days&quot;}</span></span></code></pre>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>If the user accepts, the client generates a Cassis invoice and sends it in an <code>invoice</code> message.</li>
+<li>If the user declines, the client sends nothing. Servers must not block waiting for a reply.</li>
+</ul>
+<h3 id="invoice-client-server"><code>invoice</code> (client → server)</h3>
+<p>Sent by the client in response to an <code>invoicerequest</code>.</p>
+<ul>
+<li><code>invoice</code> (object, required): The client-generated Cassis invoice JSON object.</li>
+</ul>
+<pre class="giallo" style="color: #E1E4E8; background-color: #24292E;" ><code data-lang="plain"><span class="giallo-l"><span>invoice {&quot;invoice&quot;:{&quot;payment_hash&quot;:&quot;5c04…9a7e&quot;,&quot;amount_msat&quot;:24000000,&quot;expires_at&quot;:1793872800,…}}</span></span></code></pre>
+  </article>
+</div>
+
+    </main>
+
+    <footer class="bg-dark pt-12 pb-8 text-white">
+      <div class="mx-auto max-w-[1400px] px-6 md:px-12">
+        <div class="flex flex-col justify-between gap-10 md:flex-row">
+          <div>
+            <span class="flex items-center gap-2.5 font-space text-[1.35rem] font-extrabold tracking-[0.08em] uppercase">
+              <img src="https://cop.cassis.cash/logo.svg" alt="" width="30" height="30" />
+              Cassis Order Protocol
+            </span>
+            <span class="mt-2.5 block max-w-[420px] text-sm text-white/65">Order pages that open inside Bitcoin wallets.</span>
+          </div>
+          <nav class="flex flex-wrap gap-14" aria-label="Footer">
+            <ul class="m-0 list-none p-0">
+              <li class="mb-3 font-space text-[0.68rem] font-extrabold tracking-[0.18em] uppercase text-white/80">Protocol</li>
+              <li><a class="mb-2 block text-sm text-white/60 no-underline hover:text-white" href="https://cop.cassis.cash#how">How it works</a></li>
+              <li><a class="mb-2 block text-sm text-white/60 no-underline hover:text-white" href="https://cop.cassis.cash#uses">Uses</a></li>
+              <li><a class="mb-2 block text-sm text-white/60 no-underline hover:text-white" href="https://cop.cassis.cash#examples">Examples</a></li>
+              <li><a class="mb-2 block text-sm text-white/60 no-underline hover:text-white" href="https://cop.cassis.cash/spec">Spec</a></li>
+            </ul>
+            <ul class="m-0 list-none p-0">
+              <li class="mb-3 font-space text-[0.68rem] font-extrabold tracking-[0.18em] uppercase text-white/80">Community</li>
+              <li><a class="mb-2 block text-sm text-white/60 no-underline hover:text-white" href="https://github.com/cassiscash/cassis_order_protocol" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+              <li><a class="mb-2 block text-sm text-white/60 no-underline hover:text-white" href="https://github.com/cassiscash/cassis_order_protocol/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div class="mt-10 flex flex-col gap-2 border-t border-white/20 pt-6 text-[0.8rem] text-white/60 md:flex-row md:items-center md:justify-between">
+          <span>Bitcoin merchant adoption supercharged.</span>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://cop.cassis.cash/app.js" defer></script>
+  </body>
+</html>
