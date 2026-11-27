@@ -3,12 +3,6 @@
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
 
 {% block content %}
-<div class="border-b-[3px] border-ink bg-copdeep text-white">
-  <div class="mx-auto max-w-[1400px] px-6 py-2.5 font-fira text-[0.72rem] md:px-12">
-    Draft {{ config.extra.spec_version }}. This document may change while the protocol is under development.
-  </div>
-</div>
-
 <section class="border-b-[3px] border-ink">
   <div class="mx-auto max-w-[1400px] px-6 pt-14 pb-10 md:px-12 md:pt-20">
     <p class="m-0 mb-4 font-fira text-[0.7rem] font-bold tracking-[0.18em] uppercase text-ink2">Specification &middot; {{ config.extra.spec_version }} draft</p>
